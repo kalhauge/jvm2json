@@ -5,7 +5,7 @@
     {
       nixpkgs.url = "github:NixOS/nixpkgs/23.05";
       flake-utils.url = "github:numtide/flake-utils";
-      jvmhs.url = "/Users/chrg/Develop/repos/jvmhs";
+      jvmhs.url = "github:ucla-pls/jvmhs?ref=zipless";
     };
   outputs = { self, nixpkgs, flake-utils, ... }@inputs:
     let

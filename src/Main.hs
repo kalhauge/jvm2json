@@ -19,7 +19,8 @@ import qualified Data.ByteString.Lazy.Char8 as BL
 import Data.Foldable
 
 import Jvmhs (deserializeClass, serializeClass)
-import Jvmhs.Format.Codec
+
+import Codec
 
 import Options.Applicative
 
@@ -69,13 +70,13 @@ parseConfig = do
       , metavar "JSONFILE"
       , value StdIO
       ]
-  action <-
+  act <-
     flag OutputJSON InputJSON . fold $
       [ short 'R'
       , long "reverse"
       , help "input json and output a jvm class"
       ]
-  pure (Config{..}, OutputJSON)
+  pure (Config{..}, act)
 
 main :: IO ()
 main = do

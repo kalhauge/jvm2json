@@ -115,17 +115,18 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1694068180,
-        "narHash": "sha256-uwuWYSdkRq7jAvO6mHAcw+7AtBsu7Pxo5Gx1GfMXf4M=",
-        "ref": "refs/heads/zipless",
-        "rev": "eb17fd833b47d2d8c04bad06839b9173f89b837a",
-        "revCount": 391,
-        "type": "git",
-        "url": "file:///Users/chrg/Develop/repos/jvmhs"
+        "lastModified": 1694073344,
+        "narHash": "sha256-9Dy3Os8sSCXrWxXeR0VYx3LuktEoJ48JnvFRgIxcpTY=",
+        "owner": "ucla-pls",
+        "repo": "jvmhs",
+        "rev": "c13b21635d60ad86a837a5f810075c627bac40ab",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///Users/chrg/Develop/repos/jvmhs"
+        "owner": "ucla-pls",
+        "ref": "zipless",
+        "repo": "jvmhs",
+        "type": "github"
       }
     },
     "nixpkgs": {
