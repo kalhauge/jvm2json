@@ -1,0 +1,38 @@
+name: jvm2json
+version: '0.2.0'
+author: Christian Gram Kalhauge
+maintainer: "Christian Gram Kalhauge <chrg@dtu.dk>"
+synopsis: A program for converting Java bytecode to and from json
+license: BSD3
+license-file: LICENSE
+category: Language, Java, JVM
+github: kalhauge/jvm2json
+
+description: |
+  A program for converting Java bytecode to and from json
+
+ghc-options: 
+- -Wall
+# - -Wcompat
+# - -Wincomplete-record-updates
+# - -Wincomplete-uni-patterns
+# - -Wredundant-constraints
+
+extra-source-files:
+  - LICENSE
+  - README.md
+
+dependencies:
+  - base >= 4.10 && < 4.18
+  - jvmhs >= 0.2.0 && <= 0.2.0
+
+executables:
+  jvm2json:
+    source-dirs: .
+    main: Main.hs
+    dependencies:
+      - jvmhs
+      - optparse-applicative
+      - prettyprinter
+      - bytestring
+      - aeson

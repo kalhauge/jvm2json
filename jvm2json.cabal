@@ -1,0 +1,41 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           jvm2json
+version:        0.2.0
+synopsis:       A program for converting Java bytecode to and from json
+description:    A program for converting Java bytecode to and from json
+category:       Language, Java, JVM
+homepage:       https://github.com/kalhauge/jvm2json#readme
+bug-reports:    https://github.com/kalhauge/jvm2json/issues
+author:         Christian Gram Kalhauge
+maintainer:     Christian Gram Kalhauge <chrg@dtu.dk>
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    LICENSE
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/kalhauge/jvm2json
+
+executable jvm2json
+  main-is: Main.hs
+  other-modules:
+      Paths_jvm2json
+  hs-source-dirs:
+      ./
+  ghc-options: -Wall
+  build-depends:
+      aeson
+    , base >=4.10 && <4.18
+    , bytestring
+    , jvmhs
+    , optparse-applicative
+    , prettyprinter
+  default-language: Haskell2010
