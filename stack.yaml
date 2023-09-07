@@ -4,9 +4,9 @@ packages:
 extra-deps:
 - fgl-visualize-0.1.0.1
 - git: https://github.com/ucla-pls/jvm-binary
-  commit: 8f66f1fbbc8c1f8763d402c0107111c385fa26c0
+  commit: db141713638e310b2e7011d09875ea0115bcc28e
 - git: https://github.com/ucla-pls/jvmhs
-  commit: eb17fd833b47d2d8c04bad06839b9173f89b837a
+  commit: 3a3846a59ce6d4a11473b78918a9b913ef1e1a91
 - git: https://github.com/kalhauge/cones
   commit: bfa377f74eee7293fa6af547e494ddeff910a43a
   subdirs:
