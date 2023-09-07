@@ -18,9 +18,10 @@ module Codec (
 ) where
 
 -- aeson
+
+import Data.Aeson (Value (..))
 import qualified Data.Aeson.Key as AesonKey
 import qualified Data.Aeson.Types as Aeson
-import Data.Aeson (Value (..))
 
 -- base
 import Data.Bifunctor (first)
@@ -615,38 +616,22 @@ instance Def "ByteCodeInst" ValueCodec V1 ByteCodeInst where
       given ifIf
         =: ( "if" // all do
               #fst ~ "condition" <: ref @"CmpOpr"
-              #snd
-                ~ "with_zero"
-                <: ( bimap
-                      (\case B.One -> True; B.Two -> False)
-                      (\case False -> B.Two; True -> B.One)
-                      bool
-                      <?> "compare with zero or with an extra from the stack"
-                   )
-              #trd ~ "target" <: boundIntegral
+              #snd ~ "target" <: boundIntegral
            )
         <?> "jump to $target if the $condition over intergers is true, compare with two elements or against zero if $with_zero"
-        <?> bc (BC "if_a*" [] [])
+        <?> bc (BC "if_i*" ["value1 :int", "value2 : int"] [])
+        <?> ("if $condition is 'is'" <> bc (BC "if_acmpeq" ["value1 : ref", "value2 : ref"] []))
+        <?> ("if $condition is 'nis'" <> bc (BC "if_acmpne" ["value1 :ref ", "value2 : ref"] []))
 
-      given ifIfRef
-        =: ( "ifref" // all do
-              #fst ~ "condition" <: any do
-                #ifTrue =: "eq"
-                #ifFalse =: "neq"
-              #snd
-                ~ "with_null"
-                <: ( bimap
-                      (\case B.One -> True; B.Two -> False)
-                      (\case False -> B.Two; True -> B.One)
-                      bool
-                      <?> "compare with zero or with an extra from the stack"
-                   )
-              #trd ~ "target" <: boundIntegral
+      given ifIfZ
+        =: ( "ifz" // all do
+              #fst ~ "condition" <: ref @"CmpOpr"
+              #snd ~ "target" <: boundIntegral
            )
-        <?> "jump to $target if the $condition is true, compare with two elements or against null if $with_null"
-        <?> bc (BC "if_a*" ["objectref", "objectref"] ["objectref"])
-        <?> bc (BC "ifnull" ["objectref"] ["objectref"])
-        <?> bc (BC "ifnonnull" ["objectref"] ["objectref"])
+        <?> "jump to $target if the $condition is true, compare with one element against null or 0"
+        <?> bc (BC "if*" ["value1:int"] [])
+        <?> bc (BC "ifnull" ["objectref"] [])
+        <?> bc (BC "ifnonnull" ["objectref"] [])
 
       given ifGoto
         =: ( "goto"
@@ -904,4 +889,3 @@ instance Def "BootstrapMethod" ValueCodec V1 BootstrapMethod where
 
 codecTextSerializeable :: B.TextSerializable x => Codec ValueCodec ctx x
 codecTextSerializeable = dimap (pure . B.serialize) B.deserialize text
-

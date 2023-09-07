@@ -94,11 +94,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1689943742,
-        "narHash": "sha256-6jBkbQKWPo2TUmzKvFpgmdzDJ+QxrG8qB1Iv+meMegk=",
+        "lastModified": 1694075276,
+        "narHash": "sha256-EgHdbcrD5iHKxF2so6h0XmxNEuKL9O4pzzQiXr0Ub4Q=",
         "owner": "ucla-pls",
         "repo": "jvm-binary",
-        "rev": "8f66f1fbbc8c1f8763d402c0107111c385fa26c0",
+        "rev": "db141713638e310b2e7011d09875ea0115bcc28e",
         "type": "github"
       },
       "original": {
@@ -115,11 +115,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1694073344,
-        "narHash": "sha256-9Dy3Os8sSCXrWxXeR0VYx3LuktEoJ48JnvFRgIxcpTY=",
+        "lastModified": 1694076793,
+        "narHash": "sha256-ofnd3fQRjfECMOtNlbXoMM7mXO02gy683WFEOAEMCsQ=",
         "owner": "ucla-pls",
         "repo": "jvmhs",
-        "rev": "c13b21635d60ad86a837a5f810075c627bac40ab",
+        "rev": "3a3846a59ce6d4a11473b78918a9b913ef1e1a91",
         "type": "github"
       },
       "original": {
