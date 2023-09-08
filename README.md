@@ -48,12 +48,20 @@ $ stack --version
 Version 2.11.1, Git revision c1167a6abc3f4978ccded5ba0246a57387da0e2f x86_64 hpack-0.35.2
 ```
 
-Now you should be able to build and install the program, which might take some time the first 
+Now you should be able to build the program, which might take some time the first 
 time around.
 
 ```bash
 $ stack build
 ```
+
+After which you should be able to install the program using the following command.
+
+```bash
+$ stack install
+```
+
+And if all goes well, you should be able to see that you can run `jvm2json -h` and get the above help message.
 
 ### Nix
 
