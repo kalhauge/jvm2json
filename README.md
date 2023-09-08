@@ -31,6 +31,8 @@ $ jvm2json -R -s Test.class -t test.json
 $ jvm2json -R <Test.class >test.json
 ```
 
+A specification of the codec is available in `CODEC.txt`. A nice html version is incoming.
+
 ## Installation
 
 To install the tool there are several options.

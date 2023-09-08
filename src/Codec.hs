@@ -15,6 +15,7 @@ module Codec (
   toJSONClass,
   toEncodingClass,
   parseJSONClass,
+  debugClass,
 ) where
 
 -- aeson
@@ -367,6 +368,8 @@ instance Def "CmpOpr" ValueCodec V1 B.CmpOpr where
     #ifCGe =: "ge"
     #ifCGt =: "gt"
     #ifCLe =: "le"
+    #ifCIs =: "is"
+    #ifCIsNot =: "isnot"
 
 instance Def "MethodHandle" ValueCodec V1 (B.MethodHandle B.High) where
   unref = object $ tagged "handletype" do
@@ -889,3 +892,6 @@ instance Def "BootstrapMethod" ValueCodec V1 BootstrapMethod where
 
 codecTextSerializeable :: B.TextSerializable x => Codec ValueCodec ctx x
 codecTextSerializeable = dimap (pure . B.serialize) B.deserialize text
+
+debugClass :: IO ()
+debugClass = debugCodec @V1 (ref @"Class")
