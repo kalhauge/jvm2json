@@ -10,7 +10,7 @@
   outputs = { self, nixpkgs, flake-utils, ... }@inputs:
     let
       packages = p: {
-        "jvm2json" = p.callCabal2nixWithOptions "jvmhs" self "" { };
+        "jvm2json" = p.callCabal2nixWithOptions "jvm2json" self "" { };
       };
       overlays = final: prev: {
         haskellPackages = prev.haskellPackages.extend (p: _: packages p);
@@ -24,14 +24,22 @@
         pkgs = import nixpkgs
           {
             inherit system;
-            overlays = [ overlays ] ++ inputs.jvmhs.overlays.all;
+            overlays = inputs.jvmhs.overlays.all ++ [ overlays ];
           };
         hpkgs = pkgs.haskellPackages;
       in
       {
         packages = {
-          default = hpkgs.jvm2json;
+          default = pkgs.jvm2json;
           jvm2json = pkgs.jvm2json;
+          docker = pkgs.dockerTools.buildLayeredImage
+            {
+              name = "jvm2json";
+              contents = [ pkgs.jvm2json ];
+              config = {
+                Cmd = [ "${pkgs.jvm2json}/bin/jvm2json" ];
+              };
+            };
         };
         devShells =
           let
@@ -47,7 +55,7 @@
           {
             default = hpkgs.shellFor
               {
-                name = "jvmhs-shell";
+                name = "jvm2json-shell";
                 packages = p: [ p.jvm2json ];
                 inherit buildInputs withHoogle;
               };
