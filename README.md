@@ -33,6 +33,22 @@ $ jvm2json -R <Test.class >test.json
 
 A specification of the codec is available in `CODEC.txt`. A nice html version is incoming.
 
+## Docker 
+
+A limited usage is available using docker. The following command should just work and produce Json:
+
+```bash
+docker run --rm -i kalhauge/jvm2json:latest jvm2json <Test.class >test.json
+```
+
+You should also be able to run it in reverse.
+
+```bash
+docker run --rm -i kalhauge/jvm2json:latest jvm2json -R <test.json >Test.class
+```
+
+However, the file part of the CLI requires that you mount your filesystem.
+
 ## Installation
 
 To install the tool there are several options.
