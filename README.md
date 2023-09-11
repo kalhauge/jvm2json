@@ -87,4 +87,15 @@ To build the executable simply write:
 nix build
 ```
 
+### M1 Issues
+
+You might get a 'ffi.h' not installed error, in this case you should consider running:
+```
+xcode-select --install
+```
+
+[See here for more](https://stackoverflow.com/questions/75844764/fatal-error-ffi-h-file-not-found-when-trying-to-install-hashable-via-cabal)
+
+
+
 
