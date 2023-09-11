@@ -1,0 +1,9 @@
+Usage: jvm2json [-s|--classfile CLASSFILE] [-t|--json JSONFILE] [-R|--reverse]
+
+  a tool for converting between java classfile and json
+
+Available options:
+  -s,--classfile CLASSFILE the path to the classfile, - for stdin/out
+  -t,--json JSONFILE       the path to the jsonfile, - for stdin/out
+  -R,--reverse             input json and output a jvm class
+  -h,--help                Show this help text
