@@ -80,25 +80,28 @@ parseConfig = do
       ]
   pure (Config{..}, act)
 
+runJvm2Json :: Config -> Action -> IO ()
+runJvm2Json config = \case
+  OutputJSON -> do
+    bytes <- readTarget (classFile config)
+    case deserializeClass True bytes of
+      Right cls -> do
+        v <- either fail pure $ toEncodingClass cls
+        writeTarget (jsonFile config) (Aeson.encodingToLazyByteString v)
+      Left err ->
+        hPrint stderr err
+  InputJSON -> do
+    bytes <- readTarget (jsonFile config)
+    case Aeson.eitherDecodeWith Aeson.jsonEOF' (Aeson.iparse parseJSONClass) bytes of
+      Right cls -> do
+        writeTarget (classFile config) (serializeClass cls)
+      Left err ->
+        print err
+
 jvm2json :: IO ()
 jvm2json = do
   (config, act) <-
     execParser . info (parseConfig <**> helper) . fold $
       [ progDesc "a tool for converting between java classfile and json"
       ]
-  case act of
-    OutputJSON -> do
-      bytes <- readTarget (classFile config)
-      case deserializeClass True bytes of
-        Right cls -> do
-          v <- either fail pure $ toEncodingClass cls
-          writeTarget (jsonFile config) (Aeson.encodingToLazyByteString v)
-        Left err ->
-          hPrint stderr err
-    InputJSON -> do
-      bytes <- readTarget (jsonFile config)
-      case Aeson.eitherDecodeWith Aeson.jsonEOF' (Aeson.iparse parseJSONClass) bytes of
-        Right cls -> do
-          writeTarget (classFile config) (serializeClass cls)
-        Left err ->
-          print err
+  runJvm2Json config act

@@ -51,3 +51,5 @@ tests:
       - tasty-golden
       - text
       - typed-process
+      - filepath
+      - directory

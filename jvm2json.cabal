@@ -84,6 +84,8 @@ test-suite jvm2json-test
     , conedec >=0.2.0
     , cones
     , containers
+    , directory
+    , filepath
     , jvm-binary
     , jvm2json
     , jvmhs >=0.2.0 && <=0.2.0
