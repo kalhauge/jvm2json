@@ -20,19 +20,33 @@ extra-source-files:
 
 dependencies:
   - base >= 4.10 && < 4.18
-  - jvmhs >= 0.2.0 && <= 0.2.0
-  - unordered-containers
+  - aeson
+  - bytestring
+  - conedec >= 0.2.0
+  - cones 
   - containers
   - jvm-binary
-  - cones 
-  - bytestring
-  - aeson
-  - conedec
+  - jvmhs >= 0.2.0 && <= 0.2.0
+  - unordered-containers
+  - optparse-applicative
+  - prettyprinter
+
+library:
+  source-dirs: src
 
 executables:
   jvm2json:
-    source-dirs: src
+    source-dirs: bin
     main: Main.hs
     dependencies:
-      - optparse-applicative
-      - prettyprinter
+      - jvm2json
+
+tests:
+  jvm2json-test:
+    source-dirs: test/src
+    main: Main.hs
+    dependencies:
+      - jvm2json
+      - tasty
+      - tasty-golden
+      - text

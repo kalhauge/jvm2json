@@ -1,6 +1,10 @@
-<Class> ::= object
+------
+<Class>
+------
+<Class> ::= object 
   * name : <ClassName>
-  * access : manyOf + "public"
+  * access : manyOf 
+    + "public"
     + "final"
     + "super"
     + "interface"
@@ -9,55 +13,147 @@
     + "annotation"
     + "enum"
     + "module"
-  * typeparams : manyOf object
+  * typeparams : manyOf object 
     * <TypeParameter>
     * annotations : manyOf <Annotation>
-  * super : + null
-    + object
-      * <ClassType>
-      * annotations : manyOf <Annotation>
-  * interfaces : manyOf object
+  * super : nullable object 
+    * <ClassType>
+    * annotations : manyOf <Annotation>
+  * interfaces : manyOf object 
     * <ClassType>
     * annotations : manyOf <Annotation>
   * fields : manyOf <Field>
   * methods : manyOf <Method>
-  * bootstrapmethods : manyOf object
+  * bootstrapmethods : manyOf object 
     * index : <number>
     * method : <BootstrapMethod>
-  * enclosingmethod : + null
-    + object
-      * class : <ClassName>
-      * method : + null
-        + object
-          <MethodId>
+  * enclosingmethod : nullable object 
+    * class : <ClassName>
+    * method : nullable object <MethodId>
   * innerclasses : manyOf <InnerClass>
   * annotations : manyOf <Annotation>
-  * version : + null
-    + array
-      * <number>
-      * <number>
-<ClassName> ::= <string>
-  -- a name of a class, packages seperated by '/'
-  ! "java/util/Object"
-<TypeParameter> ::= * name : <string>
-  * classbound : + null
-    + object
-      * <ThrowsType>
-      * annotations : manyOf <Annotation>
-  * interfacebound : manyOf object
+  * version : nullable array 
+    * <number>
+    * <number>
+<InnerClass> ::= object 
+  * class : <ClassName>
+  * outer : nullable <ClassName>
+  * name : nullable <string>
+  * access : manyOf 
+    + "public"
+    + "private"
+    + "protected"
+    + "static"
+    + "final"
+    + "interface"
+    + "abstract"
+    + "synthetic"
+    + "annotation"
+    + "enum"
+<MethodId> ::= 
+  * name : <string>
+  * args : manyOf <SimpleType>
+  * returns : nullable <SimpleType>
+<SimpleType> ::= 
+  + <BaseType>
+  + <SimpleReferenceType>
+<SimpleReferenceType> ::= object 
+  + * kind : "class"
+    * name : <ClassName>
+  + * kind : "array"
+    * type : <SimpleType>
+<BaseType> ::= 
+  + "byte"
+  + "char"
+  + "double"
+  + "float"
+  + "int"
+  + "long"
+  + "short"
+  + "boolean"
+<BootstrapMethod> ::= object 
+  * handle : <MethodHandle>
+  * args : manyOf <Value>
+<Value> ::= object 
+  + * type : "integer"
+    * value : <number>
+  + * type : "long"
+    * value : <number>
+  + * type : "float"
+    * value : <number>
+  + * type : "double"
+    * value : <number>
+  + * type : "string"
+    * value : <string>
+  + * type : "class"
+    * value : <SimpleReferenceType>
+  + * type : "methodtype"
+    * value : object 
+      * args : manyOf <SimpleType>
+      * returns : nullable <SimpleType>
+  + * type : "methodhandle"
+    * value : <MethodHandle>
+<MethodHandle> ::= object 
+  + * handletype : "field"
+    * kind : 
+      + "getfield"
+      + "getstatic"
+      + "putfield"
+      + "putstatic"
+    * ref : <AbsFieldId>
+  + * handletype : "method"
+    * + * kind : "virtual"
+        * method : <RefMethodId>
+      + * kind : "static"
+        * method : <RefVariableMethodId>
+      + * kind : "special"
+        * method : <RefVariableMethodId>
+      + * kind : "new_special"
+        * method : <RefMethodId>
+  + * handletype : "interface"
+    * method : <RefMethodId>
+<RefVariableMethodId> ::= object 
+  * is_interface : <bool>
+  * ref : <SimpleReferenceType>
+  * <MethodId>
+<RefMethodId> ::= object 
+  * ref : <SimpleReferenceType>
+  * <MethodId>
+<AbsFieldId> ::= object 
+  * class : <ClassName>
+  * name : <string>
+  * type : <SimpleType>
+<Method> ::= object 
+  * name : <string>
+  * access : manyOf 
+    + "public"
+    + "private"
+    + "protected"
+    + "static"
+    + "final"
+    + "synchronized"
+    + "bridge"
+    + "varargs"
+    + "native"
+    + "abstract"
+    + "strictFP"
+    + "synthetic"
+  * typeparams : manyOf object 
+    * <TypeParameter>
+    * annotations : manyOf <Annotation>
+  * params : manyOf object 
+    * <Parameter>
+    * annotations : manyOf <Annotation>
+  * returns : object 
+    * type : nullable object <Type>
+    * annotations : manyOf <Annotation>
+  * code : nullable <Code>
+  * annotations : manyOf <Annotation>
+  * exceptions : manyOf object 
     * <ThrowsType>
     * annotations : manyOf <Annotation>
-<ThrowsType> ::= + * kind : "class"
-    * <ClassType>
-  + * kind : "typevar"
-    * <TypeVariable>
-<TypeVariable> ::= * name : <string>
-  * bound : <ClassName>
-<Annotation> ::= object
-  * type : <ClassName>
-  * is_runtime_visible : <bool>
-  * values : mapOf <AnnotationValue>
-<AnnotationValue> ::= object
+  * default : nullable <AnnotationValue>
+<AnnotationValue> ::= object 
   + * type : "byte"
     * value : <number>
   + * type : "char"
@@ -78,226 +174,37 @@
   + * type : "string"
     * value : <string>
   + * type : "enum"
-    * value : object
+    * value : object 
       * type : <SimpleType>
       * name : <string>
   + * type : "class"
-    * value : + null
-      + <SimpleType>
+    * value : nullable <SimpleType>
       -- is normally only class
   + * type : "annotation"
-    * value : object
+    * value : object 
       * type : <ClassName>
       * values : mapOf <AnnotationValue>
   + * type : "array"
     * value : manyOf <AnnotationValue>
-<SimpleType> ::= 
-  + <BaseType>
-  + <SimpleReferenceType>
-<BaseType> ::= 
-  + "byte"
-  + "char"
-  + "double"
-  + "float"
-  + "int"
-  + "long"
-  + "short"
-  + "boolean"
-<SimpleReferenceType> ::= object
-  + * kind : "class"
-    * name : <ClassName>
-  + * kind : "array"
-    * type : <SimpleType>
-<ClassType> ::= * name : <string>
-  * inner : + null
-    + object
-      * <ClassType>
-      * annotations : manyOf <Annotation>
-  * args : manyOf object
-    * <TypeArgument>
-    * annotations : manyOf <Annotation>
-<TypeArgument> ::= 
-  + * kind : "any"
-    * <empty>
-  + * kind : "extended"
-    * type : object
-      * <ReferenceType>
-      * annotations : manyOf <Annotation>
-  + * kind : "implemented"
-    * type : object
-      * <ReferenceType>
-      * annotations : manyOf <Annotation>
-  + * kind : "simple"
-    * type : object
-      <ReferenceType>
-<ReferenceType> ::= 
+<ThrowsType> ::= 
   + * kind : "class"
     * <ClassType>
   + * kind : "typevar"
     * <TypeVariable>
-  + * kind : "array"
-    * type : object
-      * <Type>
-      * annotations : manyOf <Annotation>
-<Type> ::= 
-  + base : <BaseType>
-  + <ReferenceType>
-<ReferenceType> ::= 
-  + * kind : "class"
-    * <ClassType>
-  + * kind : "typevar"
-    * <TypeVariable>
-  + * kind : "array"
-    * type : object
-      * <Type>
-      * annotations : manyOf <Annotation>
-<ClassType> ::= * name : <string>
-  * inner : + null
-    + object
-      * <ClassType>
-      * annotations : manyOf <Annotation>
-  * args : manyOf object
-    * <TypeArgument>
-    * annotations : manyOf <Annotation>
-<Annotation> ::= object
-  * type : <ClassName>
-  * is_runtime_visible : <bool>
-  * values : mapOf <AnnotationValue>
-<Field> ::= object
+<TypeVariable> ::= 
   * name : <string>
-  * access : manyOf + "public"
-    + "private"
-    + "protected"
-    + "static"
-    + "final"
-    + "volatile"
-    + "transient"
-    + "synthetic"
-    + "enum"
-  * type : object
-    * <Type>
-    * annotations : manyOf <Annotation>
-  * value : + null
-    + <Value>
-  * annotations : manyOf <Annotation>
-<Value> ::= object
-  + * type : "integer"
-    * value : <number>
-  + * type : "long"
-    * value : <number>
-  + * type : "float"
-    * value : <number>
-  + * type : "double"
-    * value : <number>
-  + * type : "string"
-    * value : <string>
-  + * type : "class"
-    * value : <SimpleReferenceType>
-  + * type : "methodtype"
-    * value : object
-      * args : manyOf <SimpleType>
-      * returns : + null
-        + <SimpleType>
-  + * type : "methodhandle"
-    * value : <MethodHandle>
-<MethodHandle> ::= object
-  + * handletype : "field"
-    * kind : + "getfield"
-      + "getstatic"
-      + "putfield"
-      + "putstatic"
-    * ref : <AbsFieldId>
-  + * handletype : "method"
-    * + * kind : "virtual"
-        * method : <RefMethodId>
-      + * kind : "static"
-        * method : <RefVariableMethodId>
-      + * kind : "special"
-        * method : <RefVariableMethodId>
-      + * kind : "new_special"
-        * method : <RefMethodId>
-  + * handletype : "interface"
-    * method : <RefMethodId>
-<AbsFieldId> ::= object
-  * class : <ClassName>
-  * name : <string>
-  * type : <SimpleType>
-<RefMethodId> ::= object
-  * ref : <SimpleReferenceType>
-  * <MethodId>
-<RefVariableMethodId> ::= object
-  * is_interface : <bool>
-  * ref : <SimpleReferenceType>
-  * <MethodId>
-<Method> ::= object
-  * name : <string>
-  * access : manyOf + "public"
-    + "private"
-    + "protected"
-    + "static"
-    + "final"
-    + "synchronized"
-    + "bridge"
-    + "varargs"
-    + "native"
-    + "abstract"
-    + "strictFP"
-    + "synthetic"
-  * typeparams : manyOf object
-    * <TypeParameter>
-    * annotations : manyOf <Annotation>
-  * params : manyOf object
-    * <Parameter>
-    * annotations : manyOf <Annotation>
-  * returns : object
-    * type : + null
-      + object
-        <Type>
-    * annotations : manyOf <Annotation>
-  * code : + null
-    + <Code>
-  * annotations : manyOf <Annotation>
-  * exceptions : manyOf object
-    * <ThrowsType>
-    * annotations : manyOf <Annotation>
-  * default : + null
-    + <AnnotationValue>
-<Parameter> ::= * + <empty>
-    + * name : <string>
-      * access : manyOf + "final"
-        + "synthetic"
-        + "mandated"
-  * visible : <bool>
-  * type : object
-    * <Type>
-    * annotations : manyOf <Annotation>
-<Code> ::= object
+  * bound : <ClassName>
+<Code> ::= object 
   * max_stack : <number>
   * max_locals : <number>
-  * exceptions : manyOf object
+  * exceptions : manyOf object 
     * start : <number>
     * end : <number>
     * handler : <number>
-    * catchType : + null
-      + <ClassName>
-  * stack_map : + null
-    + <StackMapTable>
+    * catchType : nullable <ClassName>
+  * stack_map : nullable <StackMapTable>
   * bytecode : manyOf <ByteCodeInst>
-<StackMapTable> ::= manyOf object
-  * index : <number>
-  * + * type : "same"
-      * <empty>
-    + * type : "same_locals_1_stack_item_frame"
-      * info : <VerificationTypeInfo>
-    + * type : "chop_frame"
-      * info : <number>
-    + * type : "append_frame"
-      * info : manyOf <VerificationTypeInfo>
-    + * type : "full_frame"
-      * locals : manyOf <VerificationTypeInfo>
-      * stack : manyOf <VerificationTypeInfo>
-  -- see https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.4 for more info
-<ByteCodeInst> ::= object
+<ByteCodeInst> ::= object 
   * offset : <number>
   * + * opr : "array_store"
       * type : <JArrayType>
@@ -308,8 +215,7 @@
       -- store a $value of $type in a $arrayref array at index $index
       -- {aaload} ["arrayref","index","value"] -> []
     + * opr : "push"
-      * value : + null
-        + <Value>
+      * value : nullable <Value>
       -- push a $value or null onto the stack
       -- {*} [] -> ["value"]
     + * opr : "load"
@@ -329,7 +235,8 @@
       -- {iinc} [] -> []
     + * opr : "binary"
       * type : <ArithmeticType>
-      * operant : + "add"
+      * operant : 
+        + "add"
         + "sub"
         + "mul"
         + "div"
@@ -341,9 +248,11 @@
       -- negate the $value of $type
       -- {*} ["value"] -> ["result"]
     + * opr : "bitopr"
-      * type : + "int"
+      * type : 
+        + "int"
         + "long"
-      * operant : + "shl"
+      * operant : 
+        + "shl"
         + "shr"
         + "ushr"
         + "and"
@@ -353,7 +262,8 @@
       -- {*} ["value"] -> ["result"]
     + * opr : "cast"
       * + * from : "int"
-          * to : + "byte"
+          * to : 
+            + "byte"
             + "char"
             + "short"
         + * from : <ArithmeticType>
@@ -364,9 +274,11 @@
       -- compare two longs, return 1 if $value1 is larger than $value2 0 if equal and -1 if smaller in $result
       -- {lcmp} ["value1","value1"] -> ["result"]
     + * opr : "comparefloating"
-      * onnan : + 1
+      * onnan : 
+        + 1
         + -1
-      * type : + "float"
+      * type : 
+        + "float"
         + "double"
       -- compare two floats, return 1 if $value1 is larger than $value2 0 if equal and -1 if smaller in $result
       -- pushes $onnan$ if any is NaN
@@ -406,14 +318,14 @@
       -- {tableswitch} ["index"] -> []
     + * opr : "lookupswitch"
       * default : <number>
-      * targets : manyOf object
+      * targets : manyOf object 
         * key : <number>
         * target : <number>
       -- jump to $key = $index in $targets, otherwise jump to $default
       -- {lookupswitch} ["index"] -> []
     + * opr : "get"
       * static : <bool>
-      * field : object
+      * field : object 
         * class : <ClassName>
         * name : <string>
         * type : <SimpleType>
@@ -422,7 +334,7 @@
       -- if static {getstatic} [] -> ["value"]
     + * opr : "put"
       * static : <bool>
-      * field : object
+      * field : object 
         * class : <ClassName>
         * name : <string>
         * type : <SimpleType>
@@ -441,8 +353,7 @@
           * method : <RefMethodId>
         + * access : "dynamic"
           * index : <number>
-          * method : object
-            <MethodId>
+          * method : object <MethodId>
       -- invoke a method, consult the documentation
       -- {invokevirtual} ["objectref","arg1","arg2","..."] -> ["result"]
     + * opr : "new"
@@ -476,36 +387,39 @@
         -- {monitorenter} ["monitor"] -> []
         -- {monitorexit} ["monitor"] -> []
     + * opr : "return"
-      * type : + null
-        + <LocalType>
+      * type : nullable <LocalType>
       -- return a $value of $type
       -- {*return} ["value"] -> []
     + * opr : "nop"
       * <empty>
         -- No operation
     + * opr : "pop"
-      * words : + 1
+      * words : 
+        + 1
         + 2
         -- pop $words words elements from the stack, 
         -- {pop1} ["value1"] -> []
         -- {pop2} ["value1","value2"] -> []
         -- {pop2} ["value1:long"] -> []
     + * opr : "dup"
-      * words : + 1
+      * words : 
+        + 1
         + 2
         -- duplicate $words from stack
         -- {dup} ["value1"] -> ["value1","value1"]
         -- {dup2} ["v1","v2"] -> ["v1","v2","v1","v2"]
         -- {dup2} ["value1:long"] -> ["value1:long","value1:long"]
     + * opr : "dup_x1"
-      * words : + 1
+      * words : 
+        + 1
         + 2
         -- duplicate $words on the stack insert one word deep, 
         -- {dup_x1} ["v2","v1"] -> ["v1","v2","v1"]
         -- {dup2_x1} ["v3","v2","v1"] -> ["v2","v1","v3","v2","v1"]
         -- {dup2_x1} ["v2","value1:long"] -> ["value1:long","v2","value1:long"]
     + * opr : "dup_x2"
-      * words : + 1
+      * words : 
+        + 1
         + 2
         -- duplicate $words from the stack insert 2 words deep
         -- {dup_x2} ["v3","v2","v1"] -> ["v1","v3","v2","v1"]
@@ -513,26 +427,6 @@
       * <empty>
         -- swap two elements on the stack
         -- {swap} ["v2","v1"] -> ["v1","v2"]
-<JArrayType> ::= 
-  + "byte"
-  + "char"
-  + "short"
-  + "int"
-  + "long"
-  + "float"
-  + "double"
-  + "ref"
-<LocalType> ::= 
-  + "int"
-  + "long"
-  + "float"
-  + "double"
-  + "ref"
-<ArithmeticType> ::= 
-  + "int"
-  + "long"
-  + "float"
-  + "double"
 <CmpOpr> ::= 
   + "eq"
   + "ne"
@@ -542,35 +436,134 @@
   + "le"
   + "is"
   + "isnot"
+<ArithmeticType> ::= 
+  + "int"
+  + "long"
+  + "float"
+  + "double"
 <LocalType> ::= 
   + "int"
   + "long"
   + "float"
   + "double"
   + "ref"
-<BootstrapMethod> ::= object
-  * handle : <MethodHandle>
-  * args : manyOf <Value>
-<ClassName> ::= <string>
-  -- a name of a class, packages seperated by '/'
-  ! "java/util/Object"
-<MethodId> ::= * name : <string>
-  * args : manyOf <SimpleType>
-  * returns : + null
-    + <SimpleType>
-<InnerClass> ::= object
-  * class : <ClassName>
-  * outer : + null
-    + <ClassName>
-  * name : + null
-    + <string>
-  * access : manyOf + "public"
+<JArrayType> ::= 
+  + "byte"
+  + "char"
+  + "short"
+  + "int"
+  + "long"
+  + "float"
+  + "double"
+  + "ref"
+<StackMapTable> ::= manyOf object 
+  * index : <number>
+  * + * type : "same"
+      * <empty>
+    + * type : "same_locals_1_stack_item_frame"
+      * info : <VerificationTypeInfo>
+    + * type : "chop_frame"
+      * info : <number>
+    + * type : "append_frame"
+      * info : manyOf <VerificationTypeInfo>
+    + * type : "full_frame"
+      * locals : manyOf <VerificationTypeInfo>
+      * stack : manyOf <VerificationTypeInfo>
+  -- see https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.4 for more info
+<VerificationTypeInfo> ::= object 
+  + * type : "top"
+    * <empty>
+  + * type : "integer"
+    * <empty>
+  + * type : "float"
+    * <empty>
+  + * type : "long"
+    * <empty>
+  + * type : "double"
+    * <empty>
+  + * type : "null"
+    * <empty>
+  + * type : "uninitializedthis"
+    * <empty>
+  + * type : "uninitialized"
+    * index : <number>
+      -- referes to the bytecode instruction that initialized it
+  + * type : "object"
+    * ref : <SimpleReferenceType>
+<Type> ::= 
+  + base : <BaseType>
+  + <ReferenceType>
+<ReferenceType> ::= 
+  + * kind : "class"
+    * <ClassType>
+  + * kind : "typevar"
+    * <TypeVariable>
+  + * kind : "array"
+    * type : object 
+      * <Type>
+      * annotations : manyOf <Annotation>
+<Parameter> ::= 
+  * + <empty>
+    + * name : <string>
+      * access : manyOf 
+        + "final"
+        + "synthetic"
+        + "mandated"
+  * visible : <bool>
+  * type : object 
+    * <Type>
+    * annotations : manyOf <Annotation>
+<Field> ::= object 
+  * name : <string>
+  * access : manyOf 
+    + "public"
     + "private"
     + "protected"
     + "static"
     + "final"
-    + "interface"
-    + "abstract"
+    + "volatile"
+    + "transient"
     + "synthetic"
-    + "annotation"
     + "enum"
+  * type : object 
+    * <Type>
+    * annotations : manyOf <Annotation>
+  * value : nullable <Value>
+  * annotations : manyOf <Annotation>
+<ClassType> ::= 
+  * name : <string>
+  * inner : nullable object 
+    * <ClassType>
+    * annotations : manyOf <Annotation>
+  * args : manyOf object 
+    * <TypeArgument>
+    * annotations : manyOf <Annotation>
+<TypeArgument> ::= 
+  + * kind : "any"
+    * <empty>
+  + * kind : "extended"
+    * type : object 
+      * <ReferenceType>
+      * annotations : manyOf <Annotation>
+  + * kind : "implemented"
+    * type : object 
+      * <ReferenceType>
+      * annotations : manyOf <Annotation>
+  + * kind : "simple"
+    * type : object <ReferenceType>
+<Annotation> ::= object 
+  * type : <ClassName>
+  * is_runtime_visible : <bool>
+  * values : mapOf <AnnotationValue>
+<TypeParameter> ::= 
+  * name : <string>
+  * classbound : nullable object 
+    * <ThrowsType>
+    * annotations : manyOf <Annotation>
+  * interfacebound : manyOf object 
+    * <ThrowsType>
+    * annotations : manyOf <Annotation>
+<ClassName> ::= <string>
+  -- a name of a class, packages seperated by '/'
+  -- "java/util/Object"
+------

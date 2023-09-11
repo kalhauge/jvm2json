@@ -6,6 +6,7 @@
       nixpkgs.url = "github:NixOS/nixpkgs/23.05";
       flake-utils.url = "github:numtide/flake-utils";
       jvmhs.url = "github:ucla-pls/jvmhs?ref=zipless";
+      cones.url = "github:kalhauge/cones";
     };
   outputs = { self, nixpkgs, flake-utils, ... }@inputs:
     let
@@ -24,7 +25,7 @@
         pkgs = import nixpkgs
           {
             inherit system;
-            overlays = inputs.jvmhs.overlays.all ++ [ overlays ];
+            overlays = inputs.jvmhs.overlays.all ++ [ inputs.cones.overlays.default overlays ];
           };
         hpkgs = pkgs.haskellPackages;
       in

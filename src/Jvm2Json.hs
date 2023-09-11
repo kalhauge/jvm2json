@@ -3,6 +3,8 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE RecordWildCards #-}
 
+module Jvm2Json where
+
 -- base
 import Data.String
 import System.IO (hPrint, stderr)
@@ -78,8 +80,8 @@ parseConfig = do
       ]
   pure (Config{..}, act)
 
-main :: IO ()
-main = do
+jvm2json :: IO ()
+jvm2json = do
   (config, act) <-
     execParser . info (parseConfig <**> helper) . fold $
       [ progDesc "a tool for converting between java classfile and json"
