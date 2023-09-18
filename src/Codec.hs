@@ -784,7 +784,7 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
       given ifArrayLength
         =: ( "arraylength" // emptyObject
               <?> "finds the length of an array"
-              <?> bc (BC "arraylength" ["arraylength"] ["length"])
+              <?> bc (BC "arraylength" ["array"] ["length"])
            )
       given ifThrow
         =: ( "throw" // emptyObject

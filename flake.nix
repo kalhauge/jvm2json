@@ -10,13 +10,19 @@
     };
   outputs = { self, nixpkgs, flake-utils, ... }@inputs:
     let
-      packages = p: {
-        "jvm2json" = p.callCabal2nixWithOptions "jvm2json" self "" { };
-      };
-      overlays = final: prev: {
-        haskellPackages = prev.haskellPackages.extend (p: _: packages p);
-        jvm2json = final.haskell.lib.justStaticExecutables final.haskellPackages.jvm2json;
-      };
+      overlays = final: prev:
+        let
+          packages = p: {
+            "jvm2json" = final.haskell.lib.overrideCabal (p.callCabal2nixWithOptions "jvm2json" self "" { })
+              (old: {
+                doCheck = false;
+              });
+          };
+        in
+        {
+          haskellPackages = prev.haskellPackages.extend (p: _: packages p);
+          jvm2json = final.haskell.lib.justStaticExecutables final.haskellPackages.jvm2json;
+        };
     in
     {
       overlays.default = overlays;
