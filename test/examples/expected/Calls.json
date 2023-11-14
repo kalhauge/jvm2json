@@ -30,6 +30,12 @@
         "max_locals": 1,
         "exceptions": [],
         "stack_map": null,
+        "lines": [
+          {
+            "offset": 0
+          }
+        ],
+        "annotations": [],
         "bytecode": [
           {
             "offset": 0,
@@ -98,6 +104,12 @@
         "max_locals": 3,
         "exceptions": [],
         "stack_map": null,
+        "lines": [
+          {
+            "offset": 0
+          }
+        ],
+        "annotations": [],
         "bytecode": [
           {
             "offset": 0,
@@ -148,6 +160,15 @@
         "max_locals": 2,
         "exceptions": [],
         "stack_map": null,
+        "lines": [
+          {
+            "offset": 0
+          },
+          {
+            "offset": 8
+          }
+        ],
+        "annotations": [],
         "bytecode": [
           {
             "offset": 0,

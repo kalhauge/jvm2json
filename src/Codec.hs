@@ -8,6 +8,7 @@
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
@@ -330,12 +331,79 @@ instance IsAnn ann => Def "Method" ValueC V1 ann Method where
       #ifMStrictFP =: "strictFP"
       #ifMSynthetic =: "synthetic"
 
+instance forall ann. IsAnn ann => Def "LocalVarTarget" ValueC V1 ann (LocalVarTarget B.High) where
+  def = simply $ manyOfList localVarEntry
+   where
+    localVarEntry :: Codec ValueC V1 ann (LocalVarEntry B.High)
+    localVarEntry = objectAll do
+      given getLvStartPc ~ "start" <: boundIntegral
+      given getLvLength ~ "end" <: boundIntegral
+      given getLvLocalVarIndex ~ "localindex" <: (boundIntegral <?> "the index of the local")
+
+instance IsAnn ann => Def "TypeArgumentTarget" ObjectC V1 ann (TypeArgumentTarget B.High) where
+  def = all do
+    given getTypeArgumentIndex ~ "index" <: boundIntegral <?> "the bytecode index"
+    given getTypeArgumentOffset ~ "typeindex" <: boundIntegral <?> "the type argument index"
+
+instance IsAnn ann => Def "TypePath" ValueC V1 ann TypePath where
+  def = simply $ manyOfList typePathItem
+   where
+    typePathItem :: Codec ValueC V1 ann TypePathItem
+    typePathItem = objectAll do
+      at @0
+        ~ "kind"
+        <: any
+          ( do
+              #ifTPathInArray =: "array"
+              #ifTPathInNested =: "nested"
+              #ifTPathWildcard =: "wildcard"
+              #ifTPathTypeArgument =: "typearg"
+          )
+      at @1 ~ "index" <: boundIntegral
+
+instance IsAnn ann => Def "CodeAnnotation" ValueC V1 ann CodeAnnotation where
+  def = objectAll do
+    #_ctTarget
+      ~ "target"
+      <: object
+        ( tagged "type" do
+            given ifLocalVariableDeclaration =: "LocalVariableDeclaration" // "bounds" ~: ref @"LocalVarTarget"
+            given ifResourceVariableDeclaration =: "ResourceVariableDeclaration" // "bounds" ~: ref @"LocalVarTarget"
+            given ifExceptionParameterDeclaration =: "ExceptionParameterDeclaration" // "catch" ~: boundIntegral
+            given ifInstanceOfExpression =: "InstanceOfExpression" // indexTarget
+            given ifNewExpression =: "NewExpression" // indexTarget
+            given ifNewMethodReferenceExpression =: "NewMethodReferenceExpression" // indexTarget
+            given ifIdentifierMethodReferenceExpression =: "IdentifierMethodReferenceExpression" // indexTarget
+            given ifCastExpression =: "CastExpression" // ref @"TypeArgumentTarget"
+            given ifConstructorExpression =: "ConstructorExpression" // ref @"TypeArgumentTarget"
+            given ifMethodIncovationExpression =: "MethodIncovationExpression" // ref @"TypeArgumentTarget"
+            given ifGenericNewMethodReferenceExpression =: "GenericNewMethodReferenceExpression" // ref @"TypeArgumentTarget"
+            given ifGenericIdentifierwMethodReferenceExpression =: "GenericIdentifierwMethodReferenceExpression" // ref @"TypeArgumentTarget"
+        )
+    #_ctPath ~ "path" <: ref @"TypePath"
+    #_ctAnnotation ~ "annotation" <: ref @"Annotation"
+   where
+    indexTarget = "index" ~: boundIntegral
+
 instance IsAnn ann => Def "Code" ValueC V1 ann Code where
   def = objectAll do
     #_codeMaxStack ~ "max_stack" <: boundIntegral
     #_codeMaxLocals ~ "max_locals" <: boundIntegral
     #_codeExceptionTable ~ "exceptions" <: manyOfList codecExceptionHandler
     #_codeStackMap ~ "stack_map" <: optional (ref @"StackMapTable")
+    #_codeLineNumbers
+      ~ "lines"
+      <: optional
+        ( bimap IntMap.toList IntMap.fromList $
+            manyOfList
+              ( objectAll do
+                  #fst ~ "offset" <: boundIntegral <?> "the bytecode offset (not the index) TODO"
+                  #fst ~ "line" <: boundIntegral
+              )
+        )
+    #_codeAnnotations
+      ~ "annotations"
+      <: manyOfList (ref @"CodeAnnotation")
     #_codeByteCode ~ "bytecode" <: manyOf (ref @"ByteCodeInst")
    where
     codecExceptionHandler = objectAll do

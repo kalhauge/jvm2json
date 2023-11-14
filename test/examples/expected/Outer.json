@@ -43,6 +43,12 @@
         "max_locals": 1,
         "exceptions": [],
         "stack_map": null,
+        "lines": [
+          {
+            "offset": 0
+          }
+        ],
+        "annotations": [],
         "bytecode": [
           {
             "offset": 0,

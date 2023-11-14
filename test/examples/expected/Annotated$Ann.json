@@ -1,0 +1,85 @@
+{
+  "name": "Annotated$Ann",
+  "access": [
+    "public",
+    "interface",
+    "abstract",
+    "annotation"
+  ],
+  "typeparams": [],
+  "super": {
+    "name": "java/lang/Object",
+    "inner": null,
+    "args": [],
+    "annotations": []
+  },
+  "interfaces": [
+    {
+      "name": "java/lang/annotation/Annotation",
+      "inner": null,
+      "args": [],
+      "annotations": []
+    }
+  ],
+  "fields": [],
+  "methods": [],
+  "bootstrapmethods": [],
+  "enclosingmethod": null,
+  "innerclasses": [
+    {
+      "class": "Annotated$Ann",
+      "outer": "Annotated",
+      "name": "Ann",
+      "access": [
+        "public",
+        "static",
+        "interface",
+        "abstract",
+        "annotation"
+      ]
+    }
+  ],
+  "annotations": [
+    {
+      "type": "java/lang/annotation/Retention",
+      "is_runtime_visible": true,
+      "values": {
+        "value": {
+          "type": "enum",
+          "value": {
+            "type": {
+              "kind": "class",
+              "name": "java/lang/annotation/RetentionPolicy"
+            },
+            "name": "CLASS"
+          }
+        }
+      }
+    },
+    {
+      "type": "java/lang/annotation/Target",
+      "is_runtime_visible": true,
+      "values": {
+        "value": {
+          "type": "array",
+          "value": [
+            {
+              "type": "enum",
+              "value": {
+                "type": {
+                  "kind": "class",
+                  "name": "java/lang/annotation/ElementType"
+                },
+                "name": "TYPE_USE"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "version": [
+    63,
+    0
+  ]
+}

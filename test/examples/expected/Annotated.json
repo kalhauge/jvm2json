@@ -1,0 +1,184 @@
+{
+  "name": "Annotated",
+  "access": [
+    "public",
+    "super"
+  ],
+  "typeparams": [],
+  "super": {
+    "name": "java/lang/Object",
+    "inner": null,
+    "args": [],
+    "annotations": []
+  },
+  "interfaces": [],
+  "fields": [],
+  "methods": [
+    {
+      "name": "<init>",
+      "access": [
+        "public"
+      ],
+      "typeparams": [],
+      "params": [],
+      "returns": {
+        "type": null,
+        "annotations": []
+      },
+      "code": {
+        "max_stack": 1,
+        "max_locals": 1,
+        "exceptions": [],
+        "stack_map": null,
+        "lines": [
+          {
+            "offset": 0
+          }
+        ],
+        "annotations": [],
+        "bytecode": [
+          {
+            "offset": 0,
+            "opr": "load",
+            "type": "ref",
+            "index": 0
+          },
+          {
+            "offset": 1,
+            "opr": "invoke",
+            "access": "special",
+            "method": {
+              "is_interface": false,
+              "ref": {
+                "kind": "class",
+                "name": "java/lang/Object"
+              },
+              "name": "<init>",
+              "args": [],
+              "returns": null
+            }
+          },
+          {
+            "offset": 4,
+            "opr": "return",
+            "type": null
+          }
+        ]
+      },
+      "annotations": [],
+      "exceptions": [],
+      "default": null
+    },
+    {
+      "name": "test",
+      "access": [
+        "public"
+      ],
+      "typeparams": [],
+      "params": [],
+      "returns": {
+        "type": null,
+        "annotations": []
+      },
+      "code": {
+        "max_stack": 1,
+        "max_locals": 2,
+        "exceptions": [],
+        "stack_map": null,
+        "lines": [
+          {
+            "offset": 0
+          },
+          {
+            "offset": 3
+          }
+        ],
+        "annotations": [
+          {
+            "target": {
+              "type": "LocalVariableDeclaration",
+              "bounds": [
+                {
+                  "start": 3,
+                  "end": 4,
+                  "localindex": 1
+                }
+              ]
+            },
+            "path": [],
+            "annotation": {
+              "type": "Annotated$Ann",
+              "is_runtime_visible": false,
+              "values": {}
+            }
+          }
+        ],
+        "bytecode": [
+          {
+            "offset": 0,
+            "opr": "push",
+            "value": {
+              "type": "integer",
+              "value": 0
+            }
+          },
+          {
+            "offset": 1,
+            "opr": "invoke",
+            "access": "static",
+            "method": {
+              "is_interface": false,
+              "ref": {
+                "kind": "class",
+                "name": "java/lang/Integer"
+              },
+              "name": "valueOf",
+              "args": [
+                "int"
+              ],
+              "returns": {
+                "kind": "class",
+                "name": "java/lang/Integer"
+              }
+            }
+          },
+          {
+            "offset": 4,
+            "opr": "store",
+            "type": "ref",
+            "index": 1
+          },
+          {
+            "offset": 5,
+            "opr": "return",
+            "type": null
+          }
+        ]
+      },
+      "annotations": [],
+      "exceptions": [],
+      "default": null
+    }
+  ],
+  "bootstrapmethods": [],
+  "enclosingmethod": null,
+  "innerclasses": [
+    {
+      "class": "Annotated$Ann",
+      "outer": "Annotated",
+      "name": "Ann",
+      "access": [
+        "public",
+        "static",
+        "interface",
+        "abstract",
+        "annotation"
+      ]
+    }
+  ],
+  "annotations": [],
+  "version": [
+    63,
+    0
+  ]
+}

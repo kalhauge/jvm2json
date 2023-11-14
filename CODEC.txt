@@ -203,6 +203,12 @@
     * handler : <number>
     * catchType : nullable <ClassName>
   * stack_map : nullable <StackMapTable>
+  * lines : nullable manyOf object 
+    * offset : <number>
+      -- the bytecode offset (not the index) TODO
+    * offset : <number>
+      -- the bytecode offset (not the index) TODO
+  * annotations : manyOf <CodeAnnotation>
   * bytecode : manyOf <ByteCodeInst>
 <ByteCodeInst> ::= object 
   * offset : <number>
@@ -368,7 +374,7 @@
     + * opr : "arraylength"
       * <empty>
         -- finds the length of an array
-        -- {arraylength} ["arraylength"] -> ["length"]
+        -- {arraylength} ["array"] -> ["length"]
     + * opr : "throw"
       * <empty>
         -- throws an exception
@@ -456,6 +462,51 @@
   + "float"
   + "double"
   + "ref"
+<CodeAnnotation> ::= object 
+  * target : object 
+    + * type : "LocalVariableDeclaration"
+      * bounds : <LocalVarTarget>
+    + * type : "ResourceVariableDeclaration"
+      * bounds : <LocalVarTarget>
+    + * type : "ExceptionParameterDeclaration"
+      * catch : <number>
+    + * type : "InstanceOfExpression"
+      * index : <number>
+    + * type : "NewExpression"
+      * index : <number>
+    + * type : "NewMethodReferenceExpression"
+      * index : <number>
+    + * type : "IdentifierMethodReferenceExpression"
+      * index : <number>
+    + * type : "CastExpression"
+      * <TypeArgumentTarget>
+    + * type : "ConstructorExpression"
+      * <TypeArgumentTarget>
+    + * type : "MethodIncovationExpression"
+      * <TypeArgumentTarget>
+    + * type : "GenericNewMethodReferenceExpression"
+      * <TypeArgumentTarget>
+    + * type : "GenericIdentifierwMethodReferenceExpression"
+      * <TypeArgumentTarget>
+  * path : <TypePath>
+  * annotation : <Annotation>
+<TypePath> ::= manyOf object 
+  * kind : 
+    + "array"
+    + "nested"
+    + "wildcard"
+    + "typearg"
+  * index : <number>
+<TypeArgumentTarget> ::= 
+  * index : <number>
+    -- the bytecode index
+  * typeindex : <number>
+    -- the type argument index
+<LocalVarTarget> ::= manyOf object 
+  * start : <number>
+  * end : <number>
+  * localindex : <number>
+    -- the index of the local
 <StackMapTable> ::= manyOf object 
   * index : <number>
   * + * type : "same"

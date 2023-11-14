@@ -12,26 +12,26 @@ packages:
   original:
     hackage: fgl-visualize-0.1.0.1
 - completed:
-    commit: db141713638e310b2e7011d09875ea0115bcc28e
+    commit: 6c90146ebfb473b1eb699801431bdd5911eb4683
     git: https://github.com/ucla-pls/jvm-binary
     name: jvm-binary
     pantry-tree:
-      sha256: 8ae806909705ca92282737035f98f86a10b52c9df46e89f4e35d79448754f7f5
+      sha256: 081ee0cccbd0c1020d2e1cc68742d85ab7dfd9710f64112ffccdd4ec7a5b2347
       size: 4936
     version: 0.13.0
   original:
-    commit: db141713638e310b2e7011d09875ea0115bcc28e
+    commit: 6c90146ebfb473b1eb699801431bdd5911eb4683
     git: https://github.com/ucla-pls/jvm-binary
 - completed:
-    commit: 3a3846a59ce6d4a11473b78918a9b913ef1e1a91
+    commit: ea2fae5db242af8c3ad025ecb01cd721e12f04de
     git: https://github.com/ucla-pls/jvmhs
     name: jvmhs
     pantry-tree:
-      sha256: be6340f3c888f550d972186c3abcb4561dd661237b547190657962b364277200
-      size: 8056
+      sha256: fa344c466c34c0e950eebeb6c1e3a7f7a6ff1a23d99e0b843b01fa99e66da2e9
+      size: 8055
     version: 0.2.0
   original:
-    commit: 3a3846a59ce6d4a11473b78918a9b913ef1e1a91
+    commit: ea2fae5db242af8c3ad025ecb01cd721e12f04de
     git: https://github.com/ucla-pls/jvmhs
 - completed:
     commit: 69d30f009e61abb603da03f0d5be40352378fdff

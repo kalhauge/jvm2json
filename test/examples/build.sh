@@ -7,3 +7,4 @@ mkdir -p expected
 
 javac $PARAMS src/Outer.java
 javac $PARAMS src/Calls.java
+javac $PARAMS src/Annotated.java
