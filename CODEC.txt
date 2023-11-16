@@ -206,8 +206,7 @@
   * lines : nullable manyOf object 
     * offset : <number>
       -- the bytecode offset (not the index) TODO
-    * offset : <number>
-      -- the bytecode offset (not the index) TODO
+    * line : <number>
   * annotations : manyOf <CodeAnnotation>
   * bytecode : manyOf <ByteCodeInst>
 <ByteCodeInst> ::= object 

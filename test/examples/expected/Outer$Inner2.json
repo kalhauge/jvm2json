@@ -70,7 +70,8 @@
         "stack_map": null,
         "lines": [
           {
-            "offset": 0
+            "offset": 0,
+            "line": 3
           }
         ],
         "annotations": [],

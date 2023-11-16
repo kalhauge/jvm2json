@@ -32,7 +32,8 @@
         "stack_map": null,
         "lines": [
           {
-            "offset": 0
+            "offset": 0,
+            "line": 1
           }
         ],
         "annotations": [],
@@ -106,7 +107,8 @@
         "stack_map": null,
         "lines": [
           {
-            "offset": 0
+            "offset": 0,
+            "line": 4
           }
         ],
         "annotations": [],
@@ -162,10 +164,12 @@
         "stack_map": null,
         "lines": [
           {
-            "offset": 0
+            "offset": 0,
+            "line": 8
           },
           {
-            "offset": 8
+            "offset": 8,
+            "line": 9
           }
         ],
         "annotations": [],

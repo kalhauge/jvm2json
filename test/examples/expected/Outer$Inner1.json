@@ -57,7 +57,8 @@
         "stack_map": null,
         "lines": [
           {
-            "offset": 0
+            "offset": 0,
+            "line": 2
           }
         ],
         "annotations": [],

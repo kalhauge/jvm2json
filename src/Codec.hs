@@ -398,7 +398,7 @@ instance IsAnn ann => Def "Code" ValueC V1 ann Code where
             manyOfList
               ( objectAll do
                   #fst ~ "offset" <: boundIntegral <?> "the bytecode offset (not the index) TODO"
-                  #fst ~ "line" <: boundIntegral
+                  #snd ~ "line" <: boundIntegral
               )
         )
     #_codeAnnotations
