@@ -1,9 +1,3 @@
-Build profile: -w ghc-9.2.7 -O1
-In order, the following will be built (use -v for more details):
- - jvm2json-0.2.0 (exe:jvm2json) (file /Users/chrg/Develop/repos/jvm2json/dist-newstyle/build/x86_64-osx/ghc-9.2.7/jvm2json-0.2.0/cache/build changed)
-Preprocessing executable 'jvm2json' for jvm2json-0.2.0..
-Building executable 'jvm2json' for jvm2json-0.2.0..
-Linking /Users/chrg/Develop/repos/jvm2json/dist-newstyle/build/x86_64-osx/ghc-9.2.7/jvm2json-0.2.0/x/jvm2json/build/jvm2json/jvm2json ...
 Usage: jvm2json [-s|--classfile CLASSFILE] [-t|--json JSONFILE] [-R|--reverse]
 
   a tool for converting between java classfile and json

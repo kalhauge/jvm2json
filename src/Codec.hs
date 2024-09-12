@@ -665,8 +665,8 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
                 given ifOr =: "or"
                 given ifXOr =: "xor"
            )
-        <?> "negate the $value of $type"
-        <?> bc (BC "*" ["value"] ["result"])
+        <?> "do the bit operation on $value1 and $value2 of $type"
+        <?> bc (BC "*$operant" ["value1", "value1"] ["result"])
 
       given ifCast
         =: ( "cast" // any do
@@ -880,8 +880,9 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
         =: ( "return"
               // ("type" ~: optional (ref @"LocalType"))
            )
-        <?> "return a $value of $type"
+        <?> "return a optional $value of $type"
         <?> bc (BC "*return" ["value"] [])
+        <?> bc (BC "return" [] [])
       given ifNop =: ("nop" // emptyObject <?> "No operation")
       given ifPop
         =: ( "pop"

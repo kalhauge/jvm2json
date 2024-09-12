@@ -263,8 +263,8 @@
         + "and"
         + "or"
         + "xor"
-      -- negate the $value of $type
-      -- {*} ["value"] -> ["result"]
+      -- do the bit operation on $value1 and $value2 of $type
+      -- {*$operant} ["value1","value1"] -> ["result"]
     + * opr : "cast"
       * + * from : "int"
           * to : 
@@ -393,8 +393,9 @@
         -- {monitorexit} ["monitor"] -> []
     + * opr : "return"
       * type : nullable <LocalType>
-      -- return a $value of $type
+      -- return a optional $value of $type
       -- {*return} ["value"] -> []
+      -- {return} [] -> []
     + * opr : "nop"
       * <empty>
         -- No operation
