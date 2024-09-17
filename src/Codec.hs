@@ -114,7 +114,7 @@ instance IsAnn ann => Def "Parameter" ObjectC V1 ann Parameter where
     #_parameterNameAndFlags =: any do
       #ifNothing =: emptyObject
       #ifJust =: all do
-        #fst ~ "name" <: text
+        #fst ~ "name" <: optional text
         #snd
           ~ "access"
           <: codecSet

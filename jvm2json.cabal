@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           jvm2json
-version:        0.2.0
+version:        0.3.0
 synopsis:       A program for converting Java bytecode to and from json
 description:    A program for converting Java bytecode to and from json
 category:       Language, Java, JVM
@@ -41,7 +41,7 @@ library
     , cones
     , containers
     , jvm-binary
-    , jvmhs >=0.2.0 && <=0.2.0
+    , jvmhs >=0.3.0 && <=0.3.0
     , optparse-applicative
     , prettyprinter
     , unordered-containers
@@ -63,7 +63,7 @@ executable jvm2json
     , containers
     , jvm-binary
     , jvm2json
-    , jvmhs >=0.2.0 && <=0.2.0
+    , jvmhs >=0.3.0 && <=0.3.0
     , optparse-applicative
     , prettyprinter
     , unordered-containers
@@ -88,7 +88,7 @@ test-suite jvm2json-test
     , filepath
     , jvm-binary
     , jvm2json
-    , jvmhs >=0.2.0 && <=0.2.0
+    , jvmhs >=0.3.0 && <=0.3.0
     , optparse-applicative
     , prettyprinter
     , tasty

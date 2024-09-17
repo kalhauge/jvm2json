@@ -131,11 +131,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1699955037,
-        "narHash": "sha256-6TzDnnchJznA4OO9NJXGLAJ5Up52Qw5T5p6MtU9Z9cQ=",
+        "lastModified": 1726562967,
+        "narHash": "sha256-nWuE+f/OOEOJuBhpwY83jCIUlOCMLohylsfrUXQ3z7o=",
         "owner": "ucla-pls",
         "repo": "jvm-binary",
-        "rev": "6c90146ebfb473b1eb699801431bdd5911eb4683",
+        "rev": "4367a4e74463c5c5502e7768c51422ec5b4584c2",
         "type": "github"
       },
       "original": {
@@ -152,16 +152,15 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1699964784,
-        "narHash": "sha256-GcTTyHP4tsEHnfrp/wkqHf38SwO5yYvPxVhdA9LKHos=",
+        "lastModified": 1726569206,
+        "narHash": "sha256-OKs/xfqIEQRcMmK1l9F2/q0Gr9TAKms9sc09Fm6Zso8=",
         "owner": "ucla-pls",
         "repo": "jvmhs",
-        "rev": "ea2fae5db242af8c3ad025ecb01cd721e12f04de",
+        "rev": "067fa8751a92cf26ba2271611be54792eabd760e",
         "type": "github"
       },
       "original": {
         "owner": "ucla-pls",
-        "ref": "zipless",
         "repo": "jvmhs",
         "type": "github"
       }

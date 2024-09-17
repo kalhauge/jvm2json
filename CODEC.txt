@@ -555,7 +555,7 @@
       * annotations : manyOf <Annotation>
 <Parameter> ::= 
   * + <empty>
-    + * name : <string>
+    + * name : nullable <string>
       * access : manyOf 
         + "final"
         + "synthetic"
