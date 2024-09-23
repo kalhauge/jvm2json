@@ -591,15 +591,15 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
         =: ( "array_store" // do
               "type" ~: ref @"JArrayType"
            )
-        <?> "load a $value of $type from an $arrayref array at index $index"
-        <?> bc (BC "aastore" ["arrayref", "index"] ["value"])
+        <?> "store a $value of $type in a $arrayref array at index $index"
+        <?> bc (BC "aaload" ["arrayref", "index", "value"] [])
 
       given ifArrayLoad
         =: ( "array_load" // do
               "type" ~: ref @"JArrayType"
            )
-        <?> "store a $value of $type in a $arrayref array at index $index"
-        <?> bc (BC "aaload" ["arrayref", "index", "value"] [])
+        <?> "load a $value of $type from an $arrayref array at index $index"
+        <?> bc (BC "aastore" ["arrayref", "index"] ["value"])
 
       given ifPush
         =: ( "push" // do

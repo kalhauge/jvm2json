@@ -213,12 +213,12 @@
   * offset : <number>
   * + * opr : "array_store"
       * type : <JArrayType>
-      -- load a $value of $type from an $arrayref array at index $index
-      -- {aastore} ["arrayref","index"] -> ["value"]
-    + * opr : "array_load"
-      * type : <JArrayType>
       -- store a $value of $type in a $arrayref array at index $index
       -- {aaload} ["arrayref","index","value"] -> []
+    + * opr : "array_load"
+      * type : <JArrayType>
+      -- load a $value of $type from an $arrayref array at index $index
+      -- {aastore} ["arrayref","index"] -> ["value"]
     + * opr : "push"
       * value : nullable <Value>
       -- push a $value or null onto the stack
