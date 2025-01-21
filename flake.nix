@@ -2,10 +2,19 @@
   description = "A program for converting bytecode files into json";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/23.05";
-    flake-utils.url = "github:numtide/flake-utils";
-    jvmhs.url = "github:ucla-pls/jvmhs";
-    cones.url = "github:kalhauge/cones";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    jvmhs = {
+      url = "github:ucla-pls/jvmhs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    cones = {
+      url = "github:kalhauge/cones";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = {
     self,
