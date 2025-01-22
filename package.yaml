@@ -26,6 +26,7 @@ dependencies:
   - cones 
   - containers
   - jvm-binary
+  - transformers
   - jvmhs >= 0.3.0 && <= 0.3.0
   - unordered-containers
   - optparse-applicative

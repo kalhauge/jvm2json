@@ -47,17 +47,19 @@ import Jvmhs.Data.Type
 -- jvm-binary
 import qualified Language.JVM as B
 
--- unordered-containers
+-- transformers
+import Control.Monad.Trans.Except
 
+-- unordered-containers
 import Conedec.Json
 import Conedec.Json.Doc
 import qualified Data.HashMap.Strict as HashMap
 
 toJSONClass :: Class -> Either String Value
-toJSONClass = runWithError . toJSONViaCodec @V1 @Doc (ref @"Class")
+toJSONClass = runExcept . withExcept unlines . runWithError . toJSONViaCodec @V1 @Doc (ref @"Class")
 
 toEncodingClass :: Class -> Either String Aeson.Encoding
-toEncodingClass = runWithError . toEncodingViaCodec @V1 @Doc (ref @"Class")
+toEncodingClass = runExcept . withExcept unlines . runWithError . toEncodingViaCodec @V1 @Doc (ref @"Class")
 
 parseJSONClass :: Value -> Aeson.Parser Class
 parseJSONClass = parseJSONViaCodec @V1 @Doc (ref @"Class")
@@ -74,16 +76,16 @@ class (IsString ann, FromExample ValueC ann, Semigroup ann) => IsAnn ann
 
 instance IsAnn Doc
 
-instance IsAnn ann => Def "ClassName" ValueC V1 ann ClassName where
+instance (IsAnn ann) => Def "ClassName" ValueC V1 ann ClassName where
   def = codecClassName
 
-codecClassName :: IsAnn ann => Codec ValueC ctx ann ClassName
+codecClassName :: (IsAnn ann) => Codec ValueC ctx ann ClassName
 codecClassName =
   codecTextSerializeable
     <?> "a name of a class, packages seperated by '/'"
-      <!> "java/util/Object"
+    <!> "java/util/Object"
 
-instance IsAnn ann => Def "BaseType" ValueC V1 ann JBaseType where
+instance (IsAnn ann) => Def "BaseType" ValueC V1 ann JBaseType where
   def = any do
     #ifJTByte =: "byte"
     #ifJTChar =: "char"
@@ -94,7 +96,7 @@ instance IsAnn ann => Def "BaseType" ValueC V1 ann JBaseType where
     #ifJTShort =: "short"
     #ifJTBoolean =: "boolean"
 
-instance IsAnn ann => Def "LocalType" ValueC V1 ann B.LocalType where
+instance (IsAnn ann) => Def "LocalType" ValueC V1 ann B.LocalType where
   def = any do
     #ifLInt =: "int"
     #ifLLong =: "long"
@@ -102,14 +104,14 @@ instance IsAnn ann => Def "LocalType" ValueC V1 ann B.LocalType where
     #ifLDouble =: "double"
     #ifLRef =: "ref"
 
-instance IsAnn ann => Def "ArithmeticType" ValueC V1 ann B.ArithmeticType where
+instance (IsAnn ann) => Def "ArithmeticType" ValueC V1 ann B.ArithmeticType where
   def = any do
     #ifMInt =: "int"
     #ifMLong =: "long"
     #ifMFloat =: "float"
     #ifMDouble =: "double"
 
-instance IsAnn ann => Def "Parameter" ObjectC V1 ann Parameter where
+instance (IsAnn ann) => Def "Parameter" ObjectC V1 ann Parameter where
   def = all do
     #_parameterNameAndFlags =: any do
       #ifNothing =: emptyObject
@@ -117,35 +119,35 @@ instance IsAnn ann => Def "Parameter" ObjectC V1 ann Parameter where
         #fst ~ "name" <: optional text
         #snd
           ~ "access"
-          <: codecSet
-            ( any do
-                #ifPFinal =: "final"
-                #ifPSynthetic =: "synthetic"
-                #ifPMandated =: "mandated"
-            )
+            <: codecSet
+              ( any do
+                  #ifPFinal =: "final"
+                  #ifPSynthetic =: "synthetic"
+                  #ifPMandated =: "mandated"
+              )
     #_parameterVisible ~ "visible" <: bool
     #_parameterType ~ "type" <: codecAnnotated (ref @"Type")
 
-codecSet :: Ord a => Codec ValueC ctx ann a -> Codec ValueC ctx ann (Set.Set a)
+codecSet :: (Ord a) => Codec ValueC ctx ann a -> Codec ValueC ctx ann (Set.Set a)
 codecSet c = bimap Set.toList Set.fromList $ manyOfList c
 
-instance IsAnn ann => Def "TypeVariable" ObjectC V1 ann TypeVariable where
+instance (IsAnn ann) => Def "TypeVariable" ObjectC V1 ann TypeVariable where
   def = all do
     #_typeVariableName ~ "name" <: simply text
     #_typeVariableBound ~ "bound" <: ref @"ClassName"
 
-instance IsAnn ann => Def "Annotation" ValueC V1 ann Annotation where
+instance (IsAnn ann) => Def "Annotation" ValueC V1 ann Annotation where
   def = objectAll do
     #_annotationType ~ "type" <: ref @"ClassName"
     #_annotationIsRuntimeVisible ~ "is_runtime_visible" <: bool
     #_annotationValues
       ~ "values"
-      <: bimap
-        (fmap (first AesonKey.fromText) . HashMap.toList)
-        (HashMap.fromList . fmap (first AesonKey.toText))
-        (mapOf (ref @"AnnotationValue"))
+        <: bimap
+          (fmap (first AesonKey.fromText) . HashMap.toList)
+          (HashMap.fromList . fmap (first AesonKey.toText))
+          (mapOf (ref @"AnnotationValue"))
 
-instance IsAnn ann => Def "AnnotationValue" ValueC V1 ann AnnotationValue where
+instance (IsAnn ann) => Def "AnnotationValue" ValueC V1 ann AnnotationValue where
   def = object $ taggedInto "type" "value" do
     #ifAVByte =: "byte" // boundIntegral
     #ifAVChar =: "char" // boundIntegral
@@ -171,86 +173,86 @@ instance IsAnn ann => Def "AnnotationValue" ValueC V1 ann AnnotationValue where
       #fst ~ "type" <: ref @"ClassName"
       #snd
         ~ "values"
-        <: bimap
-          (fmap (first AesonKey.fromText) . HashMap.toList)
-          (HashMap.fromList . fmap (first AesonKey.toText))
-          (mapOf (ref @"AnnotationValue"))
+          <: bimap
+            (fmap (first AesonKey.fromText) . HashMap.toList)
+            (HashMap.fromList . fmap (first AesonKey.toText))
+            (mapOf (ref @"AnnotationValue"))
     #ifAVArray =: "array" // manyOfList (ref @"AnnotationValue")
 
 codecAnnotated
-  :: Def "Annotation" ValueC ctx ann Annotation
+  :: (Def "Annotation" ValueC ctx ann Annotation)
   => Codec ObjectC ctx ann a
   -> Codec ValueC ctx ann (Annotated a)
 codecAnnotated ca = objectAll do
   #_annotatedContent =: ca
   #_annotatedAnnotations ~ "annotations" <: manyOfList (ref @"Annotation")
 
-instance IsAnn ann => Def "ThrowsType" ObjectC V1 ann ThrowsType where
+instance (IsAnn ann) => Def "ThrowsType" ObjectC V1 ann ThrowsType where
   def = tagged "kind" do
     #ifThrowsClass =: "class" // ref @"ClassType"
     #ifThrowsTypeVariable =: "typevar" // ref @"TypeVariable"
 
-instance IsAnn ann => Def "ReferenceType" ObjectC V1 ann ReferenceType where
+instance (IsAnn ann) => Def "ReferenceType" ObjectC V1 ann ReferenceType where
   def = tagged "kind" do
     #ifRefClassType =: "class" // ref @"ClassType"
     #ifRefTypeVariable =: "typevar" // ref @"TypeVariable"
     #ifRefArrayType =: "array" // "type" ~: simply (codecAnnotated $ ref @"Type")
 
-instance IsAnn ann => Def "SimpleReferenceType" ValueC V1 ann JRefType where
+instance (IsAnn ann) => Def "SimpleReferenceType" ValueC V1 ann JRefType where
   def = object $ tagged "kind" do
     #ifJTClass =: "class" // "name" ~: ref @"ClassName"
     #ifJTArray =: "array" // "type" ~: ref @"SimpleType"
 
-instance IsAnn ann => Def "TypeParameter" ObjectC V1 ann TypeParameter where
+instance (IsAnn ann) => Def "TypeParameter" ObjectC V1 ann TypeParameter where
   def = all do
     #_typeParameterName ~ "name" <: simply text
     #_typeParameterClassBound
       ~ "classbound"
-      <: optional (codecAnnotated $ ref @"ThrowsType")
+        <: optional (codecAnnotated $ ref @"ThrowsType")
     #_typeParameterInterfaceBound
       ~ "interfacebound"
-      <: manyOfList (codecAnnotated $ ref @"ThrowsType")
+        <: manyOfList (codecAnnotated $ ref @"ThrowsType")
 
-instance IsAnn ann => Def "ClassType" ObjectC V1 ann ClassType where
+instance (IsAnn ann) => Def "ClassType" ObjectC V1 ann ClassType where
   def = all do
     #_classTypeName ~ "name" <: text
     #_classTypeInner ~ "inner" <: optional (codecAnnotated $ ref @"ClassType")
     #_classTypeArguments ~ "args" <: manyOfList (codecAnnotated $ ref @"TypeArgument")
 
-instance IsAnn ann => Def "TypeArgument" ObjectC V1 ann TypeArgument where
+instance (IsAnn ann) => Def "TypeArgument" ObjectC V1 ann TypeArgument where
   def = tagged "kind" do
     #ifAnyTypeArg =: "any" // emptyObject
     #ifExtendedTypeArg =: "extended" // "type" ~: codecAnnotated (ref @"ReferenceType")
     #ifImplementedTypeArg =: "implemented" // "type" ~: codecAnnotated (ref @"ReferenceType")
     #ifTypeArg =: "simple" // "type" ~: object (ref @"ReferenceType")
 
-instance IsAnn ann => Def "Type" ObjectC V1 ann Type where
+instance (IsAnn ann) => Def "Type" ObjectC V1 ann Type where
   def = any do
     #ifBaseType =: "base" ~: ref @"BaseType"
     #ifReferenceType =: ref @"ReferenceType"
 
-instance IsAnn ann => Def "SimpleType" ValueC V1 ann JType where
+instance (IsAnn ann) => Def "SimpleType" ValueC V1 ann JType where
   def = any do
     #ifJTBase =: ref @"BaseType"
     #ifJTRef =: ref @"SimpleReferenceType"
 
-instance IsAnn ann => Def "Class" ValueC V1 ann Class where
+instance (IsAnn ann) => Def "Class" ValueC V1 ann Class where
   def = objectAll do
     #_className' ~ "name" <: ref @"ClassName"
     #_classAccessFlags
       ~ "access"
-      <: codecSet
-        ( any do
-            #ifCPublic =: "public"
-            #ifCFinal =: "final"
-            #ifCSuper =: "super"
-            #ifCInterface =: "interface"
-            #ifCAbstract =: "abstract"
-            #ifCSynthetic =: "synthetic"
-            #ifCAnnotation =: "annotation"
-            #ifCEnum =: "enum"
-            #ifCModule =: "module"
-        )
+        <: codecSet
+          ( any do
+              #ifCPublic =: "public"
+              #ifCFinal =: "final"
+              #ifCSuper =: "super"
+              #ifCInterface =: "interface"
+              #ifCAbstract =: "abstract"
+              #ifCSynthetic =: "synthetic"
+              #ifCAnnotation =: "annotation"
+              #ifCEnum =: "enum"
+              #ifCModule =: "module"
+          )
     #_classTypeParameters ~ "typeparams" <: manyOfList (codecAnnotated $ ref @"TypeParameter")
     #_classSuper ~ "super" <: optional (codecAnnotated $ ref @"ClassType")
     #_classInterfaces ~ "interfaces" <: manyOfList (codecAnnotated $ ref @"ClassType")
@@ -258,52 +260,52 @@ instance IsAnn ann => Def "Class" ValueC V1 ann Class where
     #_classMethods ~ "methods" <: manyOfList (ref @"Method")
     #_classBootstrapMethods
       ~ "bootstrapmethods"
-      <: bimap
-        IntMap.toList
-        IntMap.fromList
-        ( manyOfList . object $ all do
-            at @0 ~ "index" <: boundIntegral
-            at @1 ~ "method" <: ref @"BootstrapMethod"
-        )
+        <: bimap
+          IntMap.toList
+          IntMap.fromList
+          ( manyOfList . object $ all do
+              at @0 ~ "index" <: boundIntegral
+              at @1 ~ "method" <: ref @"BootstrapMethod"
+          )
     #_classEnclosingMethod
       ~ "enclosingmethod"
-      <: optional
-        ( object $ all do
-            #fst ~ "class" <: ref @"ClassName"
-            #snd ~ "method" <: optional (object $ ref @"MethodId")
-        )
+        <: optional
+          ( object $ all do
+              #fst ~ "class" <: ref @"ClassName"
+              #snd ~ "method" <: optional (object $ ref @"MethodId")
+          )
     #_classInnerClasses ~ "innerclasses" <: manyOfList (ref @"InnerClass")
     #_classAnnotations ~ "annotations" <: manyOfList (ref @"Annotation")
     #_classVersion
       ~ "version"
-      <: optional
-        ( arrayAll do
-            at @0 <: boundIntegral
-            at @1 <: boundIntegral
-        )
+        <: optional
+          ( arrayAll do
+              at @0 <: boundIntegral
+              at @1 <: boundIntegral
+          )
 
-instance IsAnn ann => Def "InnerClass" ValueC V1 ann InnerClass where
+instance (IsAnn ann) => Def "InnerClass" ValueC V1 ann InnerClass where
   def = objectAll do
     #_innerClass ~ "class" <: ref @"ClassName"
     #_innerOuterClass ~ "outer" <: optional (ref @"ClassName")
     #_innerClassName ~ "name" <: optional text
     #_innerAccessFlags
       ~ "access"
-      <: codecSet
-        ( any do
-            #ifICPublic =: "public"
-            #ifICPrivate =: "private"
-            #ifICProtected =: "protected"
-            #ifICStatic =: "static"
-            #ifICFinal =: "final"
-            #ifICInterface =: "interface"
-            #ifICAbstract =: "abstract"
-            #ifICSynthetic =: "synthetic"
-            #ifICAnnotation =: "annotation"
-            #ifICEnum =: "enum"
-        )
+        <: codecSet
+          ( any do
+              #ifICPublic =: "public"
+              #ifICPrivate =: "private"
+              #ifICProtected =: "protected"
+              #ifICStatic =: "static"
+              #ifICFinal =: "final"
+              #ifICInterface =: "interface"
+              #ifICAbstract =: "abstract"
+              #ifICSynthetic =: "synthetic"
+              #ifICAnnotation =: "annotation"
+              #ifICEnum =: "enum"
+          )
 
-instance IsAnn ann => Def "Method" ValueC V1 ann Method where
+instance (IsAnn ann) => Def "Method" ValueC V1 ann Method where
   def = objectAll do
     #_methodName ~ "name" <: text
     #_methodAccessFlags ~ "access" <: codecSet codecMAccessFlag
@@ -315,7 +317,7 @@ instance IsAnn ann => Def "Method" ValueC V1 ann Method where
     #_methodExceptions ~ "exceptions" <: manyOfList (codecAnnotated $ ref @"ThrowsType")
     #_methodDefaultAnnotation
       ~ "default"
-      <: optional (ref @"AnnotationValue")
+        <: optional (ref @"AnnotationValue")
    where
     codecMAccessFlag = any do
       #ifMPublic =: "public"
@@ -331,7 +333,7 @@ instance IsAnn ann => Def "Method" ValueC V1 ann Method where
       #ifMStrictFP =: "strictFP"
       #ifMSynthetic =: "synthetic"
 
-instance forall ann. IsAnn ann => Def "LocalVarTarget" ValueC V1 ann (LocalVarTarget B.High) where
+instance forall ann. (IsAnn ann) => Def "LocalVarTarget" ValueC V1 ann (LocalVarTarget B.High) where
   def = simply $ manyOfList localVarEntry
    where
     localVarEntry :: Codec ValueC V1 ann (LocalVarEntry B.High)
@@ -340,52 +342,52 @@ instance forall ann. IsAnn ann => Def "LocalVarTarget" ValueC V1 ann (LocalVarTa
       given getLvLength ~ "end" <: boundIntegral
       given getLvLocalVarIndex ~ "localindex" <: (boundIntegral <?> "the index of the local")
 
-instance IsAnn ann => Def "TypeArgumentTarget" ObjectC V1 ann (TypeArgumentTarget B.High) where
+instance (IsAnn ann) => Def "TypeArgumentTarget" ObjectC V1 ann (TypeArgumentTarget B.High) where
   def = all do
     given getTypeArgumentIndex ~ "index" <: boundIntegral <?> "the bytecode index"
     given getTypeArgumentOffset ~ "typeindex" <: boundIntegral <?> "the type argument index"
 
-instance IsAnn ann => Def "TypePath" ValueC V1 ann TypePath where
+instance (IsAnn ann) => Def "TypePath" ValueC V1 ann TypePath where
   def = simply $ manyOfList typePathItem
    where
     typePathItem :: Codec ValueC V1 ann TypePathItem
     typePathItem = objectAll do
       at @0
         ~ "kind"
-        <: any
-          ( do
-              #ifTPathInArray =: "array"
-              #ifTPathInNested =: "nested"
-              #ifTPathWildcard =: "wildcard"
-              #ifTPathTypeArgument =: "typearg"
-          )
+          <: any
+            ( do
+                #ifTPathInArray =: "array"
+                #ifTPathInNested =: "nested"
+                #ifTPathWildcard =: "wildcard"
+                #ifTPathTypeArgument =: "typearg"
+            )
       at @1 ~ "index" <: boundIntegral
 
-instance IsAnn ann => Def "CodeAnnotation" ValueC V1 ann CodeAnnotation where
+instance (IsAnn ann) => Def "CodeAnnotation" ValueC V1 ann CodeAnnotation where
   def = objectAll do
     #_ctTarget
       ~ "target"
-      <: object
-        ( tagged "type" do
-            given ifLocalVariableDeclaration =: "LocalVariableDeclaration" // "bounds" ~: ref @"LocalVarTarget"
-            given ifResourceVariableDeclaration =: "ResourceVariableDeclaration" // "bounds" ~: ref @"LocalVarTarget"
-            given ifExceptionParameterDeclaration =: "ExceptionParameterDeclaration" // "catch" ~: boundIntegral
-            given ifInstanceOfExpression =: "InstanceOfExpression" // indexTarget
-            given ifNewExpression =: "NewExpression" // indexTarget
-            given ifNewMethodReferenceExpression =: "NewMethodReferenceExpression" // indexTarget
-            given ifIdentifierMethodReferenceExpression =: "IdentifierMethodReferenceExpression" // indexTarget
-            given ifCastExpression =: "CastExpression" // ref @"TypeArgumentTarget"
-            given ifConstructorExpression =: "ConstructorExpression" // ref @"TypeArgumentTarget"
-            given ifMethodIncovationExpression =: "MethodIncovationExpression" // ref @"TypeArgumentTarget"
-            given ifGenericNewMethodReferenceExpression =: "GenericNewMethodReferenceExpression" // ref @"TypeArgumentTarget"
-            given ifGenericIdentifierwMethodReferenceExpression =: "GenericIdentifierwMethodReferenceExpression" // ref @"TypeArgumentTarget"
-        )
+        <: object
+          ( tagged "type" do
+              given ifLocalVariableDeclaration =: "LocalVariableDeclaration" // "bounds" ~: ref @"LocalVarTarget"
+              given ifResourceVariableDeclaration =: "ResourceVariableDeclaration" // "bounds" ~: ref @"LocalVarTarget"
+              given ifExceptionParameterDeclaration =: "ExceptionParameterDeclaration" // "catch" ~: boundIntegral
+              given ifInstanceOfExpression =: "InstanceOfExpression" // indexTarget
+              given ifNewExpression =: "NewExpression" // indexTarget
+              given ifNewMethodReferenceExpression =: "NewMethodReferenceExpression" // indexTarget
+              given ifIdentifierMethodReferenceExpression =: "IdentifierMethodReferenceExpression" // indexTarget
+              given ifCastExpression =: "CastExpression" // ref @"TypeArgumentTarget"
+              given ifConstructorExpression =: "ConstructorExpression" // ref @"TypeArgumentTarget"
+              given ifMethodIncovationExpression =: "MethodIncovationExpression" // ref @"TypeArgumentTarget"
+              given ifGenericNewMethodReferenceExpression =: "GenericNewMethodReferenceExpression" // ref @"TypeArgumentTarget"
+              given ifGenericIdentifierwMethodReferenceExpression =: "GenericIdentifierwMethodReferenceExpression" // ref @"TypeArgumentTarget"
+          )
     #_ctPath ~ "path" <: ref @"TypePath"
     #_ctAnnotation ~ "annotation" <: ref @"Annotation"
    where
     indexTarget = "index" ~: boundIntegral
 
-instance IsAnn ann => Def "Code" ValueC V1 ann Code where
+instance (IsAnn ann) => Def "Code" ValueC V1 ann Code where
   def = objectAll do
     #_codeMaxStack ~ "max_stack" <: boundIntegral
     #_codeMaxLocals ~ "max_locals" <: boundIntegral
@@ -393,17 +395,17 @@ instance IsAnn ann => Def "Code" ValueC V1 ann Code where
     #_codeStackMap ~ "stack_map" <: optional (ref @"StackMapTable")
     #_codeLineNumbers
       ~ "lines"
-      <: optional
-        ( bimap IntMap.toList IntMap.fromList $
-            manyOfList
-              ( objectAll do
-                  #fst ~ "offset" <: boundIntegral <?> "the bytecode offset (not the index) TODO"
-                  #snd ~ "line" <: boundIntegral
-              )
-        )
+        <: optional
+          ( bimap IntMap.toList IntMap.fromList $
+              manyOfList
+                ( objectAll do
+                    #fst ~ "offset" <: boundIntegral <?> "the bytecode offset (not the index) TODO"
+                    #snd ~ "line" <: boundIntegral
+                )
+          )
     #_codeAnnotations
       ~ "annotations"
-      <: manyOfList (ref @"CodeAnnotation")
+        <: manyOfList (ref @"CodeAnnotation")
     #_codeByteCode ~ "bytecode" <: manyOf (ref @"ByteCodeInst")
    where
     codecExceptionHandler = objectAll do
@@ -412,7 +414,7 @@ instance IsAnn ann => Def "Code" ValueC V1 ann Code where
       #_ehHandler ~ "handler" <: boundIntegral
       #_ehCatchType ~ "catchType" <: optional (ref @"ClassName")
 
-instance IsAnn ann => Def "VerificationTypeInfo" ValueC V1 ann (VerificationTypeInfo B.High) where
+instance (IsAnn ann) => Def "VerificationTypeInfo" ValueC V1 ann (VerificationTypeInfo B.High) where
   def = object $ tagged "type" do
     given ifVTTop =: "top" // emptyObject
     given ifVTInteger =: "integer" // emptyObject
@@ -429,7 +431,7 @@ instance IsAnn ann => Def "VerificationTypeInfo" ValueC V1 ann (VerificationType
          )
     given ifVTObject =: "object" // "ref" ~: ref @"SimpleReferenceType"
 
-instance IsAnn ann => Def "StackMapTable" ValueC V1 ann (StackMapTable B.High) where
+instance (IsAnn ann) => Def "StackMapTable" ValueC V1 ann (StackMapTable B.High) where
   def =
     simply
       ( manyOfList
@@ -447,7 +449,7 @@ instance IsAnn ann => Def "StackMapTable" ValueC V1 ann (StackMapTable B.High) w
       )
       <?> "see https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.4 for more info"
 
-instance IsAnn ann => Def "CmpOpr" ValueC V1 ann B.CmpOpr where
+instance (IsAnn ann) => Def "CmpOpr" ValueC V1 ann B.CmpOpr where
   def = any do
     #ifCEq =: "eq"
     #ifCNe =: "ne"
@@ -458,14 +460,15 @@ instance IsAnn ann => Def "CmpOpr" ValueC V1 ann B.CmpOpr where
     #ifCIs =: "is"
     #ifCIsNot =: "isnot"
 
-instance IsAnn ann => Def "MethodHandle" ValueC V1 ann (B.MethodHandle B.High) where
+instance (IsAnn ann) => Def "MethodHandle" ValueC V1 ann (B.MethodHandle B.High) where
   def = object $ tagged "handletype" do
     given ifMHField =: "field" // all do
-      given getMethodHandleFieldKind ~ "kind" <: any do
-        given ifMHGetField =: "getfield"
-        given ifMHGetStatic =: "getstatic"
-        given ifMHPutField =: "putfield"
-        given ifMHPutStatic =: "putstatic"
+      given getMethodHandleFieldKind
+        ~ "kind" <: any do
+          given ifMHGetField =: "getfield"
+          given ifMHGetStatic =: "getstatic"
+          given ifMHPutField =: "putfield"
+          given ifMHPutStatic =: "putstatic"
       given getMethodHandleFieldRef ~ "ref" <: ref @"AbsFieldId"
     given ifMHMethod =: "method" // taggedInto "kind" "method" do
       given ifMHInvokeVirtual =: "virtual" // ref @"RefMethodId"
@@ -474,7 +477,7 @@ instance IsAnn ann => Def "MethodHandle" ValueC V1 ann (B.MethodHandle B.High) w
       given ifMHNewInvokeSpecial =: "new_special" // ref @"RefMethodId"
     given ifMHInterface =: "interface" // "method" ~: simply (ref @"RefMethodId")
 
-instance IsAnn ann => Def "JArrayType" ValueC V1 ann B.ArrayType where
+instance (IsAnn ann) => Def "JArrayType" ValueC V1 ann B.ArrayType where
   def = any do
     #ifAByte =: "byte"
     #ifAChar =: "char"
@@ -486,7 +489,7 @@ instance IsAnn ann => Def "JArrayType" ValueC V1 ann B.ArrayType where
     #ifARef =: "ref"
 
 codecInRefType
-  :: Def "SimpleReferenceType" ValueC ctx ann JRefType
+  :: (Def "SimpleReferenceType" ValueC ctx ann JRefType)
   => Codec ObjectC ctx ann a
   -> Codec ObjectC ctx ann (B.InRefType a)
 codecInRefType c = all do
@@ -494,7 +497,7 @@ codecInRefType c = all do
   #inRefTypeId =: c
 
 codecInClass
-  :: Def "ClassName" ValueC ctx ann ClassName
+  :: (Def "ClassName" ValueC ctx ann ClassName)
   => Codec ObjectC ctx ann a
   -> Codec ObjectC ctx ann (B.InClass a)
 codecInClass c = all do
@@ -507,7 +510,7 @@ codecFieldId
   => Codec ObjectC ctx ann B.FieldId
 codecFieldId = simply $ codecNameAndType ("type" ~: codecFieldDescriptor)
 
-instance IsAnn ann => Def "AbsFieldId" ValueC V1 ann B.AbsFieldId where
+instance (IsAnn ann) => Def "AbsFieldId" ValueC V1 ann B.AbsFieldId where
   def = object codecAbsFieldId
 
 codecAbsFieldId
@@ -518,21 +521,21 @@ codecAbsFieldId
 codecAbsFieldId = simply $ codecInClass codecFieldId
 
 codecMethodDescriptor
-  :: Def "SimpleType" ValueC ctx ann JType
+  :: (Def "SimpleType" ValueC ctx ann JType)
   => Codec ObjectC ctx ann B.MethodDescriptor
 codecMethodDescriptor = all do
   #methodDescriptorArguments ~ "args" <: manyOfList (ref @"SimpleType")
   #methodDescriptorReturnType ~ "returns" <: simply (optional (ref @"SimpleType"))
 
 codecFieldDescriptor
-  :: Def "SimpleType" ValueC ctx ann JType
+  :: (Def "SimpleType" ValueC ctx ann JType)
   => Codec ValueC ctx ann B.FieldDescriptor
 codecFieldDescriptor = simply (ref @"SimpleType")
 
-instance IsAnn ann => Def "RefMethodId" ValueC V1 ann (B.InRefType B.MethodId) where
+instance (IsAnn ann) => Def "RefMethodId" ValueC V1 ann (B.InRefType B.MethodId) where
   def = object codecRefMethodId
 
-instance IsAnn ann => Def "ClassMethodId" ValueC V1 ann (B.InClass B.MethodId) where
+instance (IsAnn ann) => Def "ClassMethodId" ValueC V1 ann (B.InClass B.MethodId) where
   def = object codecClassMethodId
 
 codecRefMethodId
@@ -549,7 +552,7 @@ codecClassMethodId
   => Codec ObjectC ctx ann (B.InClass B.MethodId)
 codecClassMethodId = codecInClass (ref @"MethodId")
 
-instance IsAnn ann => Def "MethodId" ObjectC V1 ann B.MethodId where
+instance (IsAnn ann) => Def "MethodId" ObjectC V1 ann B.MethodId where
   def = codecMethodId
 
 codecMethodId
@@ -558,7 +561,7 @@ codecMethodId
   => Codec ObjectC ctx ann B.MethodId
 codecMethodId = simply $ codecNameAndType codecMethodDescriptor
 
-instance IsAnn ann => Def "RefVariableMethodId" ValueC V1 ann B.AbsVariableMethodId where
+instance (IsAnn ann) => Def "RefVariableMethodId" ValueC V1 ann B.AbsVariableMethodId where
   def = object codecAbsVariableMethodId
 
 codecAbsVariableMethodId
@@ -583,7 +586,7 @@ bc :: (Semigroup a, IsString a) => BC -> a
 bc (BC name before after) = do
   "{" <> fromString name <> "} " <> fromString (show before) <> " -> " <> fromString (show after)
 
-instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
+instance (IsAnn ann) => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
   def = objectAll do
     #offset <: boundIntegral
     #opcode =: tagged "opr" do
@@ -635,12 +638,13 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
       given ifBinaryOpr
         =: ( "binary" // all do
               #snd ~ "type" <: ref @"ArithmeticType"
-              #fst ~ "operant" <: any do
-                given ifAdd =: "add"
-                given ifSub =: "sub"
-                given ifMul =: "mul"
-                given ifDiv =: "div"
-                given ifRem =: "rem"
+              #fst
+                ~ "operant" <: any do
+                  given ifAdd =: "add"
+                  given ifSub =: "sub"
+                  given ifMul =: "mul"
+                  given ifDiv =: "div"
+                  given ifRem =: "rem"
            )
         <?> "does a binary operation over type $type, with $operant on $value1 $value2"
         <?> bc (BC "*" ["value1", "value2"] ["result"])
@@ -654,16 +658,18 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
 
       given ifBitOpr
         =: ( "bitopr" // all do
-              #snd ~ "type" <: any do
-                given ifOne =: "int"
-                given ifTwo =: "long"
-              #fst ~ "operant" <: any do
-                given ifShL =: "shl"
-                given ifShR =: "shr"
-                given ifUShR =: "ushr"
-                given ifAnd =: "and"
-                given ifOr =: "or"
-                given ifXOr =: "xor"
+              #snd
+                ~ "type" <: any do
+                  given ifOne =: "int"
+                  given ifTwo =: "long"
+              #fst
+                ~ "operant" <: any do
+                  given ifShL =: "shl"
+                  given ifShR =: "shr"
+                  given ifUShR =: "ushr"
+                  given ifAnd =: "and"
+                  given ifOr =: "or"
+                  given ifXOr =: "xor"
            )
         <?> "do the bit operation on $value1 and $value2 of $type"
         <?> bc (BC "*$operant" ["value1", "value1"] ["result"])
@@ -674,10 +680,11 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
                 =: untup
                   ( all do
                       #fst ~ "from" <: "int"
-                      #snd ~ "to" <: any do
-                        #ifMByte =: "byte"
-                        #ifMChar =: "char"
-                        #ifMShort =: "short"
+                      #snd
+                        ~ "to" <: any do
+                          #ifMByte =: "byte"
+                          #ifMChar =: "char"
+                          #ifMShort =: "short"
                   )
               given ifCastTo =: all do
                 #fst ~ "from" <: ref @"ArithmeticType"
@@ -692,12 +699,14 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
 
       given ifCompareFloating
         =: ( "comparefloating" // all do
-              #fst ~ "onnan" <: any do
-                given ifTrue =: exact (Number 1)
-                given ifFalse =: exact (Number (-1))
-              #snd ~ "type" <: any do
-                given ifOne =: "float"
-                given ifTwo =: "double"
+              #fst
+                ~ "onnan" <: any do
+                  given ifTrue =: exact (Number 1)
+                  given ifFalse =: exact (Number (-1))
+              #snd
+                ~ "type" <: any do
+                  given ifOne =: "float"
+                  given ifTwo =: "double"
            )
         <?> "compare two floats, return 1 if $value1 is larger than $value2 0 if equal and -1 if smaller in $result"
         <?> "pushes $onnan$ if any is NaN"
@@ -748,11 +757,11 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
               #snd =: all do
                 given getSwitchLow
                   ~ "low"
-                  <: boundIntegral
-                  <?> "value to substract from index before looking up"
+                    <: boundIntegral
+                    <?> "value to substract from index before looking up"
                 given getSwitchOffsets
                   ~ "targets"
-                  <: manyOf boundIntegral
+                    <: manyOf boundIntegral
            )
         <?> "jump to $index - $low in $targets, otherwise jump to $default"
         <?> bc (BC "tableswitch" ["index"] [])
@@ -762,11 +771,11 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
               #fst ~ "default" <: boundIntegral
               #snd
                 ~ "targets"
-                <: manyOf
-                  ( object $ all do
-                      #fst ~ "key" <: boundIntegral
-                      #snd ~ "target" <: boundIntegral
-                  )
+                  <: manyOf
+                    ( object $ all do
+                        #fst ~ "key" <: boundIntegral
+                        #snd ~ "target" <: boundIntegral
+                    )
            )
         <?> "jump to $key = $index in $targets, otherwise jump to $default"
         <?> bc (BC "lookupswitch" ["index"] [])
@@ -775,16 +784,16 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
         =: ( "get" // all do
               #fst
                 ~ "static"
-                <: bimap
-                  ( \case
-                      B.FldStatic -> True
-                      B.FldField -> False
-                  )
-                  ( \case
-                      True -> B.FldStatic
-                      False -> B.FldField
-                  )
-                  bool
+                  <: bimap
+                    ( \case
+                        B.FldStatic -> True
+                        B.FldField -> False
+                    )
+                    ( \case
+                        True -> B.FldStatic
+                        False -> B.FldField
+                    )
+                    bool
               #snd ~ "field" <: object codecAbsFieldId
            )
         <?> "get value from $field (might be $static)"
@@ -794,16 +803,16 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
         =: ( "put" // all do
               #fst
                 ~ "static"
-                <: bimap
-                  ( \case
-                      B.FldStatic -> True
-                      B.FldField -> False
-                  )
-                  ( \case
-                      True -> B.FldStatic
-                      False -> B.FldField
-                  )
-                  bool
+                  <: bimap
+                    ( \case
+                        B.FldStatic -> True
+                        B.FldField -> False
+                    )
+                    ( \case
+                        True -> B.FldStatic
+                        False -> B.FldField
+                    )
+                    bool
               #snd ~ "field" <: object codecAbsFieldId
            )
         <?> "put a value into a $field (might be $static)"
@@ -850,22 +859,26 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
               <?> bc (BC "newarray" ["count1", "count2", "..."] ["objectref"])
            )
       given ifArrayLength
-        =: ( "arraylength" // emptyObject
+        =: ( "arraylength"
+              // emptyObject
               <?> "finds the length of an array"
               <?> bc (BC "arraylength" ["array"] ["length"])
            )
       given ifThrow
-        =: ( "throw" // emptyObject
+        =: ( "throw"
+              // emptyObject
               <?> "throws an exception"
               <?> bc (BC "athrow" ["objectref"] ["objectref"])
            )
       given ifCheckCast
-        =: ( "checkcast" // ("type" ~: ref @"SimpleReferenceType")
+        =: ( "checkcast"
+              // ("type" ~: ref @"SimpleReferenceType")
               <?> "throws a ClassCastException if $objectref can be cast to type $type"
               <?> bc (BC "checkcast" ["objectref"] ["objectref"])
            )
       given ifInstanceOf
-        =: ( "instanceof" // ("type" ~: ref @"SimpleReferenceType")
+        =: ( "instanceof"
+              // ("type" ~: ref @"SimpleReferenceType")
               <?> "returns 1 if $objectref can be cast to type $type, otherwise 0"
               <?> bc (BC "checkcast" ["objectref"] ["result"])
            )
@@ -938,12 +951,13 @@ instance IsAnn ann => Def "ByteCodeInst" ValueC V1 ann ByteCodeInst where
               <?> bc (BC "dup_x2" ["v3", "v2", "v1"] ["v1", "v3", "v2", "v1"])
            )
       given ifSwap
-        =: ( "swap" // emptyObject
+        =: ( "swap"
+              // emptyObject
               <?> "swap two elements on the stack"
               <?> bc (BC "swap" ["v2", "v1"] ["v1", "v2"])
            )
 
-instance IsAnn ann => Def "Field" ValueC V1 ann Field where
+instance (IsAnn ann) => Def "Field" ValueC V1 ann Field where
   def = objectAll do
     #_fieldName ~ "name" <: text
     #_fieldAccessFlags ~ "access" <: codecSet codecFAccessFlag
@@ -962,7 +976,7 @@ instance IsAnn ann => Def "Field" ValueC V1 ann Field where
       #ifFSynthetic =: "synthetic"
       #ifFEnum =: "enum"
 
-instance IsAnn ann => Def "Value" ValueC V1 ann JValue where
+instance (IsAnn ann) => Def "Value" ValueC V1 ann JValue where
   def = object $ tagged "type" do
     #ifVInteger =: "integer" // ("value" ~: boundIntegral)
     #ifVLong =: "long" // ("value" ~: boundIntegral)
@@ -973,10 +987,10 @@ instance IsAnn ann => Def "Value" ValueC V1 ann JValue where
     #ifVMethodType =: "methodtype" // ("value" ~: object codecMethodDescriptor)
     #ifVMethodHandle =: "methodhandle" // ("value" ~: ref @"MethodHandle")
 
-instance IsAnn ann => Def "BootstrapMethod" ValueC V1 ann BootstrapMethod where
+instance (IsAnn ann) => Def "BootstrapMethod" ValueC V1 ann BootstrapMethod where
   def = object $ all do
     #_bootstrapMethodHandle ~ "handle" <: ref @"MethodHandle"
     #_bootstrapMethodArguments ~ "args" <: manyOfList (ref @"Value")
 
-codecTextSerializeable :: B.TextSerializable x => Codec ValueC ctx ann x
+codecTextSerializeable :: (B.TextSerializable x) => Codec ValueC ctx ann x
 codecTextSerializeable = dimap (pure . B.serialize) B.deserialize text
