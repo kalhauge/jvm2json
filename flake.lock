@@ -142,11 +142,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1737490980,
-        "narHash": "sha256-4awnrUPEm8Y/95JTPjW2dqGE/sUB6rYV47jwMIbWH6I=",
+        "lastModified": 1737527129,
+        "narHash": "sha256-X3qTYEu6HTPxBbIBIWL3ZfWF4t+RnqJF7sBfZyBeYsw=",
         "owner": "ucla-pls",
         "repo": "jvm-binary",
-        "rev": "bbccad3eb1ebe34c149a9135820347d07a47d34b",
+        "rev": "89245e2dbf5e3c5f8320d8ebddcc26222e30b8e1",
         "type": "github"
       },
       "original": {
@@ -165,11 +165,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1737491036,
-        "narHash": "sha256-Rv3gaLMxSSeuZsFGloHbU1wj9DTBsbxBhZpydlqBY+o=",
+        "lastModified": 1737527218,
+        "narHash": "sha256-FRtOvnslTvA8i7Jtpr+IdwcHCEU0SlugwZXx4ccpcQs=",
         "owner": "ucla-pls",
         "repo": "jvmhs",
-        "rev": "34538361797aab75d106bafe632e6dc53779fdcd",
+        "rev": "4c84b30b0a7400a1c7c45defe8853da4ca227098",
         "type": "github"
       },
       "original": {
