@@ -165,11 +165,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1737527218,
-        "narHash": "sha256-FRtOvnslTvA8i7Jtpr+IdwcHCEU0SlugwZXx4ccpcQs=",
+        "lastModified": 1737529425,
+        "narHash": "sha256-tCCmj24IergXnLLqQzvl8VmqZqqvlzy37kH5AsEV/rw=",
         "owner": "ucla-pls",
         "repo": "jvmhs",
-        "rev": "4c84b30b0a7400a1c7c45defe8853da4ca227098",
+        "rev": "16ed18b5bc518adbaf17d76dbba88da3eb670b6b",
         "type": "github"
       },
       "original": {
