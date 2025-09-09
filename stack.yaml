@@ -1,12 +1,12 @@
-resolver: lts-20.26
+resolver: lts-23.28
 packages:
 - .
 extra-deps:
 - fgl-visualize-0.1.0.1
 - git: https://github.com/ucla-pls/jvm-binary
-  commit: 4367a4e74463c5c5502e7768c51422ec5b4584c2
+  commit: be51cc4c8ae75eb7caec4949774c08b7c12d460e
 - git: https://github.com/ucla-pls/jvmhs
-  commit: 067fa8751a92cf26ba2271611be54792eabd760e
+  commit: 0542648d411c0b8000657590a431e697b95729c3
 - git: https://github.com/kalhauge/cones
   commit: 69d30f009e61abb603da03f0d5be40352378fdff
   subdirs:

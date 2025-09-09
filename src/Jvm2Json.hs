@@ -10,10 +10,11 @@ import Data.String
 import System.IO (hPrint, stderr)
 
 -- aeson
+
+import qualified Data.Aeson as Aeson
 import qualified Data.Aeson.Encoding as Aeson
-import qualified Data.Aeson.Internal as Aeson
 import qualified Data.Aeson.Parser as Aeson
-import qualified Data.Aeson.Parser.Internal as Aeson
+import qualified Data.Aeson.Types as Aeson
 
 -- bytestring
 import qualified Data.ByteString.Lazy.Char8 as BL
@@ -92,7 +93,7 @@ runJvm2Json config = \case
         hPrint stderr err
   InputJSON -> do
     bytes <- readTarget (jsonFile config)
-    case Aeson.eitherDecodeWith Aeson.jsonEOF' (Aeson.iparse parseJSONClass) bytes of
+    case Aeson.eitherDecodeWith Aeson.json (Aeson.iparse parseJSONClass) bytes of
       Right cls -> do
         writeTarget (classFile config) (serializeClass cls)
       Left err ->

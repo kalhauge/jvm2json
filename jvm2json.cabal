@@ -1,11 +1,11 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.36.1.
+-- This file has been generated from package.yaml by hpack version 0.38.1.
 --
 -- see: https://github.com/sol/hpack
 
 name:           jvm2json
-version:        0.3.0
+version:        0.3.1
 synopsis:       A program for converting Java bytecode to and from json
 description:    A program for converting Java bytecode to and from json
 category:       Language, Java, JVM
@@ -34,14 +34,15 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      aeson
+      aeson >=2.2
+    , attoparsec-aeson >=2.2
     , base >=4.10 && <4.20
     , bytestring
     , conedec >=0.2.0
     , cones
     , containers
     , jvm-binary
-    , jvmhs >=0.3.0 && <=0.3.0
+    , jvmhs >=0.3.0 && <=0.3.1
     , optparse-applicative
     , prettyprinter
     , transformers
@@ -56,7 +57,8 @@ executable jvm2json
       bin
   ghc-options: -Wall
   build-depends:
-      aeson
+      aeson >=2.2
+    , attoparsec-aeson >=2.2
     , base >=4.10 && <4.20
     , bytestring
     , conedec >=0.2.0
@@ -64,7 +66,7 @@ executable jvm2json
     , containers
     , jvm-binary
     , jvm2json
-    , jvmhs >=0.3.0 && <=0.3.0
+    , jvmhs >=0.3.0 && <=0.3.1
     , optparse-applicative
     , prettyprinter
     , transformers
@@ -80,7 +82,8 @@ test-suite jvm2json-test
       test/src
   ghc-options: -Wall
   build-depends:
-      aeson
+      aeson >=2.2
+    , attoparsec-aeson >=2.2
     , base >=4.10 && <4.20
     , bytestring
     , conedec >=0.2.0
@@ -90,7 +93,7 @@ test-suite jvm2json-test
     , filepath
     , jvm-binary
     , jvm2json
-    , jvmhs >=0.3.0 && <=0.3.0
+    , jvmhs >=0.3.0 && <=0.3.1
     , optparse-applicative
     , prettyprinter
     , tasty

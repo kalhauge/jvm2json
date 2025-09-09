@@ -1,5 +1,5 @@
 name: jvm2json
-version: '0.3.0'
+version: '0.3.1'
 author: Christian Gram Kalhauge
 maintainer: "Christian Gram Kalhauge <chrg@dtu.dk>"
 synopsis: A program for converting Java bytecode to and from json
@@ -20,14 +20,15 @@ extra-source-files:
 
 dependencies:
   - base >= 4.10 && < 4.20
-  - aeson
+  - aeson >= 2.2
+  - attoparsec-aeson >= 2.2
   - bytestring
   - conedec >= 0.2.0
   - cones 
   - containers
   - jvm-binary
   - transformers
-  - jvmhs >= 0.3.0 && <= 0.3.0
+  - jvmhs >= 0.3.0 && <= 0.3.1
   - unordered-containers
   - optparse-applicative
   - prettyprinter
