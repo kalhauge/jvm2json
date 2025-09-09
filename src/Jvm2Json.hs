@@ -10,8 +10,6 @@ import Data.String
 import System.IO (hPrint, stderr)
 
 -- aeson
-
-import qualified Data.Aeson as Aeson
 import qualified Data.Aeson.Encoding as Aeson
 import qualified Data.Aeson.Parser as Aeson
 import qualified Data.Aeson.Types as Aeson

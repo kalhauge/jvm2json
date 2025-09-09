@@ -8,7 +8,7 @@ extra-deps:
 - git: https://github.com/ucla-pls/jvmhs
   commit: 0542648d411c0b8000657590a431e697b95729c3
 - git: https://github.com/kalhauge/cones
-  commit: 69d30f009e61abb603da03f0d5be40352378fdff
+  commit: 669e58c31dddfe3d17f303ce65c67cb94abed5b4
   subdirs:
   - cones
   - conedec

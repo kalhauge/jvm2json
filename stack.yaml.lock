@@ -34,29 +34,29 @@ packages:
     commit: 0542648d411c0b8000657590a431e697b95729c3
     git: https://github.com/ucla-pls/jvmhs
 - completed:
-    commit: 69d30f009e61abb603da03f0d5be40352378fdff
+    commit: 669e58c31dddfe3d17f303ce65c67cb94abed5b4
     git: https://github.com/kalhauge/cones
     name: cones
     pantry-tree:
-      sha256: dd8ef9f6a001aaf01b88920be85a1491d6fea9cacdcfbfda08b52f10db82ac95
+      sha256: d3346f34fc7f6769954f65c19be8e928fe64eb9be20d7ca0fca34af9e3123e01
       size: 431
     subdir: cones
     version: 0.1.0
   original:
-    commit: 69d30f009e61abb603da03f0d5be40352378fdff
+    commit: 669e58c31dddfe3d17f303ce65c67cb94abed5b4
     git: https://github.com/kalhauge/cones
     subdir: cones
 - completed:
-    commit: 69d30f009e61abb603da03f0d5be40352378fdff
+    commit: 669e58c31dddfe3d17f303ce65c67cb94abed5b4
     git: https://github.com/kalhauge/cones
     name: conedec
     pantry-tree:
-      sha256: b37e571cb01e3180c51afaed77a6f6a718aa82466add111ebffcf54cb2a9cf91
+      sha256: b34faa047ec3345df0835b3cceb3d979ce033f44b21bc7175d5aab9915b34ef5
       size: 555
     subdir: conedec
-    version: 0.2.0
+    version: 0.2.1
   original:
-    commit: 69d30f009e61abb603da03f0d5be40352378fdff
+    commit: 669e58c31dddfe3d17f303ce65c67cb94abed5b4
     git: https://github.com/kalhauge/cones
     subdir: conedec
 snapshots:
