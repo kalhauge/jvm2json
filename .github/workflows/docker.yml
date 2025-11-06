@@ -14,6 +14,9 @@ env:
 jobs:
   build-docker:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
    
     steps:
       - name: Checkout repository
@@ -42,17 +45,22 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/}
 
           GHCR="ghcr.io/${{ env.IMAGE_NAME }}"
+
           
           echo "Loading image jvm2json"
+          set -x
           docker load -i ./result/jvm2json.tar.gz
-          for TAG in "$GHCR:$VERSION $GHC:latest"; do
+          for TAG in "$GHCR:$VERSION" "$GHCR:latest"; do
             docker tag "jvm2json:latest" "$TAG"
             docker push "$TAG"
           done
+          set +x
 
           echo "Loading image jvm2json-jdk"
+          set -x
           docker load -i ./result/jvm2json-jdk.tar.gz
-          for TAG in "$GHCR:jdk-$VERSION $GHC:jdk-latest"; do
+          for TAG in "$GHCR:jdk-$VERSION" "$GHCR:jdk-latest"; do
             docker tag "jvm2json:jdk" "$TAG"
             docker push "$TAG"
           done
+          set +x
