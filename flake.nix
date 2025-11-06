@@ -57,13 +57,42 @@
       );
   in {
     packages = perSystem {
-      do = {pkgs, ...}: {
+      do = {pkgs, ...}: rec {
         default = pkgs.jvm2json;
         jvm2json = pkgs.jvm2json;
+        dockers =
+          pkgs.linkFarm "dockers"
+          {
+            "jvm2json.tar.gz" = docker;
+            "jvm2json-jdk.tar.gz" = docker-jdk;
+          };
         docker = pkgs.dockerTools.buildImage {
           name = "jvm2json";
+          tag = "latest";
           config = {
             Cmd = ["${pkgs.jvm2json}/bin/jvm2json"];
+          };
+        };
+        docker-jdk = pkgs.dockerTools.buildImage {
+          name = "jvm2json";
+          tag = "jdk";
+
+          copyToRoot = pkgs.buildEnv {
+            name = "jvm2json-jdk";
+            paths = [
+              pkgs.bashInteractive
+              pkgs.coreutils
+              pkgs.jdk
+              pkgs.jvm2json
+            ];
+          };
+
+          config = {
+            Cmd = ["/bin/bash"];
+            WorkingDir = "/workspace";
+            Env = [
+              "JAVA_HOME=${pkgs.jdk}"
+            ];
           };
         };
       };
