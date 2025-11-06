@@ -1,0 +1,66 @@
+name: Build and Distribute Docker
+
+on: 
+  push:
+    tags: [ 'v*' ]
+  pull_request: 
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+
+jobs:
+  build-docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+   
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix with flakes
+        uses: DeterminateSystems/determinate-nix-action@v3.12.1
+    
+      - name: Build Docker image with Nix
+        run: nix build .#packages.x86_64-linux.dockers --print-build-logs
+    
+      - name: Upload Docker tarball as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jpamb-docker-${{ github.sha }}
+          path: result
+          retention-days: 7
+      
+      - name: Push to GitHub Container Registry
+        if: |
+          github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          # Login to GitHub Container Registry
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          
+          VERSION=${GITHUB_REF#refs/tags/}
+
+          GHCR="ghcr.io/${{ env.IMAGE_NAME }}"
+
+          
+          echo "Loading image jvm2json"
+          set -x
+          docker load -i ./result/jvm2json.tar.gz
+          for TAG in "$GHCR:$VERSION" "$GHCR:latest"; do
+            docker tag "jvm2json:latest" "$TAG"
+            docker push "$TAG"
+          done
+          set +x
+
+          echo "Loading image jvm2json-jdk"
+          set -x
+          docker load -i ./result/jvm2json-jdk.tar.gz
+          for TAG in "$GHCR:jdk-$VERSION" "$GHCR:jdk-latest"; do
+            docker tag "jvm2json:jdk" "$TAG"
+            docker push "$TAG"
+          done
+          set +x
